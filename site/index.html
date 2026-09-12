@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta
+    name="description"
+    content="SCTool Registry에 등록된 Marketplace 도구를 검색하고 설명과 버전 정보를 확인하는 Simple Connection 웹 UI"
+  />
+  <title>SCTool Marketplace</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+  <script type="module" src="./assets/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#marketplace">콘텐츠로 이동</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="./" aria-label="SCTool Marketplace 홈">
+        <span class="brand-mark" aria-hidden="true">SC</span>
+        <span>
+          <strong>SCTool Marketplace</strong>
+          <small>Simple Connection</small>
+        </span>
+      </a>
+      <a
+        class="registry-link"
+        href="https://github.com/Simple-Connection/sctool-registry"
+        target="_blank"
+        rel="noreferrer"
+      >Registry 보기</a>
+    </div>
+  </header>
+
+  <main id="marketplace">
+    <section class="hero">
+      <div class="shell hero-inner">
+        <p class="eyebrow">SCTOOL MARKETPLACE</p>
+        <h1>필요한 도구를 찾고,<br />설명부터 먼저 확인하세요.</h1>
+        <p class="hero-copy">
+          GitHub 파일이나 Registry JSON을 직접 읽지 않아도 됩니다.
+          Registry가 Marketplace에 공개한 SCTool만 한 곳에서 보여줍니다.
+        </p>
+
+        <label class="search-box">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input
+            id="search-input"
+            type="search"
+            autocomplete="off"
+            placeholder="도구 이름, 게시자, 기능 검색"
+            aria-label="SCTool Marketplace 검색"
+          />
+          <kbd>/</kbd>
+        </label>
+      </div>
+    </section>
+
+    <section class="shell marketplace-shell" aria-labelledby="list-title">
+      <div class="marketplace-toolbar">
+        <div>
+          <p class="section-kicker">REGISTRY CATALOG</p>
+          <h2 id="list-title">Marketplace 도구</h2>
+        </div>
+        <div id="result-count" class="result-count" aria-live="polite"></div>
+      </div>
+
+      <div id="registry-status" class="status-card status-loading" role="status" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <strong>Registry 연결 확인 중</strong>
+          <p>서명된 Registry head와 Marketplace snapshot을 확인하고 있습니다.</p>
+        </div>
+      </div>
+
+      <div id="tool-grid" class="tool-grid" hidden></div>
+
+      <div id="empty-state" class="empty-state" hidden>
+        <div class="empty-symbol" aria-hidden="true">□</div>
+        <h3 id="empty-title">표시할 SCTool이 없습니다.</h3>
+        <p id="empty-copy"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <div>
+        <strong>Simple Connection · SCTool Marketplace</strong>
+        <p>Registry의 공개 Marketplace projection을 읽는 read-only UI입니다.</p>
+      </div>
+      <div id="registry-revision" class="revision mono"></div>
+    </div>
+  </footer>
+
+  <dialog id="tool-dialog" class="tool-dialog" aria-labelledby="dialog-title">
+    <form method="dialog" class="dialog-close-row">
+      <button class="icon-button" aria-label="상세 닫기">×</button>
+    </form>
+
+    <article class="tool-detail">
+      <header class="detail-head">
+        <div>
+          <p id="dialog-publisher" class="section-kicker"></p>
+          <h2 id="dialog-title"></h2>
+          <p id="dialog-version" class="detail-version"></p>
+        </div>
+        <span class="verified-badge">Registry Marketplace</span>
+      </header>
+
+      <nav class="detail-tabs" aria-label="SCTool 상세 정보">
+        <button type="button" class="detail-tab active" data-tab="details">세부정보</button>
+        <button type="button" class="detail-tab" data-tab="features">기능</button>
+        <button type="button" class="detail-tab optional-tab" data-tab="changelog" hidden>변경사항</button>
+        <button type="button" class="detail-tab optional-tab" data-tab="dependencies" hidden>의존성</button>
+        <button type="button" class="detail-tab optional-tab" data-tab="extension_pack" hidden>확장팩</button>
+      </nav>
+
+      <section id="dialog-content" class="detail-content"></section>
+
+      <aside class="detail-meta" aria-label="Registry 정보">
+        <dl id="dialog-meta"></dl>
+      </aside>
+
+      <div class="install-boundary">
+        <strong>설치·다운로드</strong>
+        <p>
+          현재 SC Linked App의 공개 Marketplace 설치 handoff 계약이 아직 없습니다.
+          이 웹사이트는 private artifact를 우회 다운로드하지 않습니다.
+        </p>
+      </div>
+    </article>
+  </dialog>
+
+  <noscript>
+    <div class="noscript">SCTool Marketplace를 사용하려면 JavaScript가 필요합니다.</div>
+  </noscript>
+</body>
+</html>
