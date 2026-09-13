@@ -36,9 +36,6 @@ jobs:
           node scripts/validate-registry-hosting.mjs
           node --test scripts/test-registry-hosting.mjs
 
-      - name: Validate Registry Pages retirement closeout evidence
-        run: node scripts/validate-registry-pages-retirement-closeout.mjs
-
       - name: Verify exact Registry handoff
         run: >-
           python scripts/verify-registry-handoff.py

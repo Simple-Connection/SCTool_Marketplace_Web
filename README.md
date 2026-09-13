@@ -40,25 +40,6 @@ The source code resolves this as `../registry/` relative to `site/assets/registr
 
 The cutover was activated only after workflow run `34757627710` verified that the public `/registry/` files were byte-for-byte identical to Registry handoff artifact `10317154228`. The legacy Registry Pages workflow has not been removed or disabled.
 
-## Registry legacy Pages retirement closeout
-
-Marketplace-side evidence for the Registry owner is preserved at:
-
-```text
-deployment/registry-handoff/closeout/
-├─ README.md
-├─ registry-pages-retirement-closeout.json
-└─ registry-hosting-deployment-evidence.json
-```
-
-`registry-pages-retirement-closeout.json` is the machine-readable decision record. It binds the original Registry producer run/artifacts to the successful Marketplace cutover run and records W1-W7 as PASS.
-
-The final Marketplace deployment evidence is copied into the repository so Registry owners do not need to repeat the Marketplace hosting/cutover verification after Actions artifacts expire.
-
-The closeout permits retirement of the **legacy Registry GitHub Pages publication responsibility only**. Registry signed distribution generation, signature verification, exact handoff artifact production, and handoff evidence production remain Registry responsibilities and must be preserved.
-
-The record does not claim that unknown third-party consumers of the old Registry Pages URL do not exist.
-
 ## Public layout
 
 ```text
@@ -79,7 +60,6 @@ node --check site/assets/app.js
 node scripts/validate-site.mjs
 node scripts/validate-registry-hosting.mjs
 node --test scripts/test-registry-hosting.mjs
-node scripts/validate-registry-pages-retirement-closeout.mjs
 python scripts/verify-registry-handoff.py --lock deployment/registry-handoff/lock.json
 node scripts/prepare-pages.mjs --out _site
 python scripts/verify-registry-handoff.py --lock deployment/registry-handoff/lock.json --materialize _site/registry
@@ -88,7 +68,7 @@ node scripts/validate-registry-hosting.mjs --site-root _site --require-registry
 
 ## Deployment
 
-`.github/workflows/jekyll.yml` validates the Marketplace, validates the Registry retirement closeout evidence, verifies the exact Registry handoff, assembles one Pages artifact, materializes the signed Registry bytes, validates the artifact, deploys it, then fetches the public `/registry/` endpoint and requires byte-for-byte equality before producing deployment evidence.
+`.github/workflows/jekyll.yml` validates the Marketplace, verifies the exact Registry handoff, assembles one Pages artifact, materializes the signed Registry bytes, validates the artifact, deploys it, then fetches the public `/registry/` endpoint and requires byte-for-byte equality before producing deployment evidence.
 
 No Registry signing credentials or Registry signing implementation belong in this repository.
 
