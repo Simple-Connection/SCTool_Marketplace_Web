@@ -30,7 +30,7 @@
       "workflowRunId": 34757627710,
       "workflowRunConclusion": "success",
       "deploymentEvidenceArtifactId": 10317574006,
-      "deploymentEvidenceArtifactDigest": "sha256:871bb270df46320d1401e89fc211d98d671add78b3b78d7c560df6b3474a251",
+      "deploymentEvidenceArtifactDigest": "sha256:871bb270df46320d1401e89fc211d98d671add78b3b78d7c560df6b3474a2513",
       "publicBaseUrl": "https://simple-connection.github.io/SCTool_Marketplace_Web/registry/",
       "publicEndpointExactBytes": "PASS"
     }
