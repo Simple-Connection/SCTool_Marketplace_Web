@@ -31,7 +31,9 @@ async function collectTextFiles(root) {
         await walk(path);
       } else if (entry.isFile()) {
         const extension = extname(entry.name);
-        if ([".js", ".mjs", ".py", ".yml", ".yaml", ".html", ".md", ".json"].includes(extension)) files.push(path);
+        if ([".js", ".mjs", ".py", ".yml", ".yaml", ".html", ".md", ".json"].includes(extension)) {
+          files.push(path);
+        }
       }
     }
   }
@@ -40,17 +42,76 @@ async function collectTextFiles(root) {
   return files;
 }
 
+function parseJson(text, label) {
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error(`${label} is not valid JSON: ${error.message}`);
+  }
+}
+
 const client = await readFile("site/assets/registry-client.js", "utf8");
 const workflow = await readFile(".github/workflows/jekyll.yml", "utf8");
+const lockText = await readFile("deployment/registry-handoff/lock.json", "utf8");
+const lock = parseJson(lockText, "deployment/registry-handoff/lock.json");
 
 const failures = [];
-const currentRegistryBase = "https://simple-connection.github.io/sctool-registry/";
+const marketplaceRegistryExpression = 'new URL("../registry/", import.meta.url).href';
+const legacyRegistryBase = "https://simple-connection.github.io/sctool-registry/";
+const expectedPublicBase = "https://simple-connection.github.io/SCTool_Marketplace_Web/registry/";
 
-if (!client.includes(`REGISTRY_BASE_URL = "${currentRegistryBase}"`)) {
-  failures.push("Production Registry base URL changed before public /registry/ exact-byte validation.");
+if (!client.includes(marketplaceRegistryExpression)) {
+  failures.push("Browser Registry base URL is not bound to the Marketplace Pages /registry/ boundary.");
 }
+if (client.includes(legacyRegistryBase)) {
+  failures.push("Legacy Registry Pages browser endpoint remains after production cutover.");
+}
+
 if (await exists("site/registry")) {
   failures.push("site/registry must not contain committed canonical Registry distribution data.");
+}
+
+if (lock.schemaVersion !== "marketplace-registry-handoff-lock/v1") {
+  failures.push("Registry handoff lock schema is not supported.");
+}
+if (lock.producer?.repository !== "Simple-Connection/sctool-registry") {
+  failures.push("Registry handoff producer repository mismatch.");
+}
+if (lock.producer?.workflow !== ".github/workflows/pages.yml") {
+  failures.push("Registry handoff producer workflow mismatch.");
+}
+if (lock.producer?.conclusion !== "success") {
+  failures.push("Registry handoff producer run is not marked successful.");
+}
+if (lock.hosting?.targetPath !== "/registry/") {
+  failures.push("Registry handoff target path must be /registry/.");
+}
+if (lock.hosting?.browserCutover !== "ACTIVE") {
+  failures.push("Registry browser cutover is not ACTIVE.");
+}
+
+const prerequisite = lock.hosting?.prerequisiteValidation;
+if (!prerequisite || typeof prerequisite !== "object") {
+  failures.push("Registry cutover prerequisite validation evidence is missing.");
+} else {
+  if (prerequisite.workflowRunConclusion !== "success") {
+    failures.push("Registry public-hosting prerequisite workflow did not succeed.");
+  }
+  if (prerequisite.publicEndpointExactBytes !== "PASS") {
+    failures.push("Registry public-hosting exact-byte prerequisite is not PASS.");
+  }
+  if (prerequisite.publicBaseUrl !== expectedPublicBase) {
+    failures.push("Registry public-hosting prerequisite URL does not match the Marketplace /registry/ endpoint.");
+  }
+  if (!Number.isSafeInteger(prerequisite.workflowRunId) || prerequisite.workflowRunId < 1) {
+    failures.push("Registry public-hosting prerequisite workflow run ID is invalid.");
+  }
+  if (!Number.isSafeInteger(prerequisite.deploymentEvidenceArtifactId) || prerequisite.deploymentEvidenceArtifactId < 1) {
+    failures.push("Registry public-hosting deployment evidence artifact ID is invalid.");
+  }
+  if (!/^sha256:[0-9a-f]{64}$/.test(prerequisite.deploymentEvidenceArtifactDigest ?? "")) {
+    failures.push("Registry public-hosting deployment evidence artifact digest is invalid.");
+  }
 }
 
 const forbiddenMarkers = [
@@ -87,23 +148,33 @@ for (const marker of [
   "registry-hosting-deployment-evidence.json",
   "path: ./_site",
 ]) {
-  if (!workflow.includes(marker)) failures.push(`Pages workflow is missing required exact-handoff gate: ${marker}`);
+  if (!workflow.includes(marker)) {
+    failures.push(`Pages workflow is missing required exact-handoff gate: ${marker}`);
+  }
 }
 
 const siteRoot = readArg("--site-root");
 if (siteRoot) {
   const root = resolve(siteRoot);
+
   for (const path of ["index.html", "assets/app.js", "assets/registry-client.js", "assets/styles.css"]) {
-    if (!(await exists(join(root, ...path.split("/"))))) failures.push(`Assembled Pages artifact is missing ${path}`);
+    if (!(await exists(join(root, ...path.split("/")))) {
+      failures.push(`Assembled Pages artifact is missing ${path}`);
+    }
   }
+
   const registryPath = join(root, "registry");
   if (!(await exists(registryPath))) {
-    if (hasFlag("--require-registry")) failures.push("Assembled Pages artifact is missing required /registry/ boundary.");
+    if (hasFlag("--require-registry")) {
+      failures.push("Assembled Pages artifact is missing required /registry/ boundary.");
+    }
   } else {
     try {
       await validateRegistryDistribution(registryPath);
     } catch (error) {
-      failures.push(`Assembled /registry/ boundary is invalid [${error.code ?? "UNKNOWN"}]: ${error.message}`);
+      failures.push(
+        `Assembled /registry/ boundary is invalid [${error.code ?? "UNKNOWN"}]: ${error.message}`,
+      );
     }
   }
 }
