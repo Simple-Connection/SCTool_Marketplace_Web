@@ -19,7 +19,14 @@ const checks = [
   [html.includes("./assets/styles.css"), "index.html must load styles.css"],
   [html.includes('type="module" src="./assets/app.js"'), "index.html must load app.js as a module"],
   [app.includes('from "./registry-client.js"'), "app.js must consume registry-client.js"],
-  [client.includes('new URL("../registry/", import.meta.url).href'), "Marketplace-hosted Registry base URL is missing"],\n  [!client.includes("https://simple-connection.github.io/sctool-registry/"), "Legacy Registry Pages browser endpoint must not remain after cutover"],
+  [
+    client.includes('new URL("../registry/", import.meta.url).href'),
+    "Marketplace-hosted Registry base URL is missing",
+  ],
+  [
+    !client.includes("https://simple-connection.github.io/sctool-registry/"),
+    "Legacy Registry Pages browser endpoint must not remain after cutover",
+  ],
   [client.includes("marketplaceProfiles"), "Marketplace projection must use marketplaceProfiles"],
   [client.includes("snapshot.sha256"), "Snapshot digest validation must remain present"],
   [!app.includes("simple-connection://"), "Unapproved custom install protocol must not be introduced"],
@@ -35,5 +42,7 @@ if (failures.length) {
 
 console.log("Site validation PASS");
 console.log("authority=sctool-registry");
+console.log("hosting_authority=SCTool_Marketplace_Web");
+console.log("registry_browser_base=marketplace-pages-relative-registry");
 console.log("projection=marketplaceProfiles+packages+publishers");
 console.log("install_handoff=fail_closed");
