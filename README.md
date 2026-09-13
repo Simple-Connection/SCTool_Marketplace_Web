@@ -1,15 +1,15 @@
 # SCTool Marketplace Web
 
-Human-facing, read-only Marketplace UI and public hosting boundary for the canonical SCTool Registry.
+Human-facing, read-only Marketplace UI and sole public GitHub Pages hosting boundary for the canonical SCTool Registry distribution.
 
 ## Authority boundary
 
 ```text
 Simple-Connection/sctool-registry
-  -> signed Registry distribution artifact + handoff evidence
-  -> SCTool_Marketplace_Web exact-byte hosting
-  -> immutable snapshot
-  -> Marketplace presentation
+  -> canonical Registry data, schema, trust and signing
+  -> exact signed distribution artifact + handoff evidence
+  -> SCTool_Marketplace_Web exact-byte public hosting
+  -> Marketplace browser consumption and presentation
 ```
 
 This repository owns Marketplace presentation, static-site assembly, GitHub Pages deployment, browser fetch configuration, and public hosting of already-signed Registry distribution bytes.
@@ -24,19 +24,21 @@ The active hosting handoff is pinned in:
 deployment/registry-handoff/lock.json
 ```
 
-The directory also preserves the exact Registry Actions distribution artifact ZIP and exact producer evidence artifact ZIP. Every Pages deployment verifies their SHA-256 digests, validates producer/run/source/artifact identity, validates the exact three-file set, verifies file SHA-256 and byte sizes, and materializes the signed files byte-for-byte under `_site/registry/`.
+The directory preserves the exact Registry Actions distribution artifact ZIP and exact producer evidence artifact ZIP. Every Pages deployment verifies their SHA-256 digests, validates producer/run/source/artifact identity, validates the exact three-file set, verifies file SHA-256 and byte sizes, and materializes the signed files byte-for-byte under `_site/registry/`.
 
 The producer artifact retention period does not control Marketplace hosting lifetime because the exact accepted handoff artifacts are preserved in this repository as immutable deployment inputs. They remain non-canonical copies; Registry authority stays in `Simple-Connection/sctool-registry`.
 
-## Current browser endpoint
+## Production browser endpoint
 
-The browser still reads:
+The browser now consumes the Registry distribution from the same Marketplace Pages deployment:
 
 ```text
-https://simple-connection.github.io/sctool-registry/
+https://simple-connection.github.io/SCTool_Marketplace_Web/registry/
 ```
 
-This is intentional for the first production-cutover checkpoint. The Marketplace Pages deployment now hosts the exact distribution at `/registry/`, but the browser base URL is changed only after CI verifies the public `/registry/` bytes exactly match the accepted Registry handoff.
+The source code resolves this as `../registry/` relative to `site/assets/registry-client.js`, so the GitHub Pages project path is not hardcoded.
+
+The cutover was activated only after workflow run `34757627710` verified that the public `/registry/` files were byte-for-byte identical to Registry handoff artifact `10317154228`. The legacy Registry Pages workflow has not been removed or disabled.
 
 ## Public layout
 
@@ -69,3 +71,7 @@ node scripts/validate-registry-hosting.mjs --site-root _site --require-registry
 `.github/workflows/jekyll.yml` validates the Marketplace, verifies the exact Registry handoff, assembles one Pages artifact, materializes the signed Registry bytes, validates the artifact, deploys it, then fetches the public `/registry/` endpoint and requires byte-for-byte equality before producing deployment evidence.
 
 No Registry signing credentials or Registry signing implementation belong in this repository.
+
+## Browser trust-chain status
+
+The browser consumer validates the head structure, safe snapshot path, snapshot byte size, snapshot SHA-256, and revision/sequence/source identity. It does not currently perform Ed25519 root-signature or distribution-signature verification in the browser. Those signatures are verified by the Registry producer before handoff and recorded as PASS in the accepted producer evidence. Additional browser trust-chain verification requires a separately approved consumer-side verification contract; Registry signing authority must not be duplicated here.

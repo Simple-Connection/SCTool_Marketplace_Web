@@ -24,6 +24,15 @@
   },
   "hosting": {
     "targetPath": "/registry/",
-    "browserCutover": "PENDING_PUBLIC_ENDPOINT_VALIDATION"
+    "browserCutover": "ACTIVE",
+    "prerequisiteValidation": {
+      "targetRevision": "cbaa6943fac5b42a110e01cb2f67cbf0ed56b2eb",
+      "workflowRunId": 34757627710,
+      "workflowRunConclusion": "success",
+      "deploymentEvidenceArtifactId": 10317574006,
+      "deploymentEvidenceArtifactDigest": "sha256:871bb270df46320d1401e89fc211d98d671add78b3b78d7c560df6b3474a251",
+      "publicBaseUrl": "https://simple-connection.github.io/SCTool_Marketplace_Web/registry/",
+      "publicEndpointExactBytes": "PASS"
+    }
   }
 }

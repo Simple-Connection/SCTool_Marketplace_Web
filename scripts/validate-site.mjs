@@ -19,7 +19,7 @@ const checks = [
   [html.includes("./assets/styles.css"), "index.html must load styles.css"],
   [html.includes('type="module" src="./assets/app.js"'), "index.html must load app.js as a module"],
   [app.includes('from "./registry-client.js"'), "app.js must consume registry-client.js"],
-  [client.includes("https://simple-connection.github.io/sctool-registry/"), "Registry Pages base URL is missing"],
+  [client.includes('new URL("../registry/", import.meta.url).href'), "Marketplace-hosted Registry base URL is missing"],\n  [!client.includes("https://simple-connection.github.io/sctool-registry/"), "Legacy Registry Pages browser endpoint must not remain after cutover"],
   [client.includes("marketplaceProfiles"), "Marketplace projection must use marketplaceProfiles"],
   [client.includes("snapshot.sha256"), "Snapshot digest validation must remain present"],
   [!app.includes("simple-connection://"), "Unapproved custom install protocol must not be introduced"],

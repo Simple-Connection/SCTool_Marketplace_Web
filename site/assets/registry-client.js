@@ -1,4 +1,4 @@
-export const REGISTRY_BASE_URL = "https://simple-connection.github.io/sctool-registry/";
+export const REGISTRY_BASE_URL = new URL("../registry/", import.meta.url).href;
 
 export class MarketplaceDataError extends Error {
   constructor(code, message, cause) {
