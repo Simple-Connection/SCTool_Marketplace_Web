@@ -1,0 +1,21 @@
+schema_version: "1.0"
+document_type: marketplace_policy_index
+repository: Simple-Connection/SCTool_Marketplace_Web
+authority: MARKETPLACE_WEB_POLICY
+governance:
+  namespace:
+    source: governance/namespace_rules.yaml
+    source_mode: MANIFEST_BOUND_SOURCE_SET
+    classifier: ../../.github/policy-tools/namespace-classifier/engine/classifier.py
+    semantic_lock: ../../.github/policy-tools/namespace-classifier/generated/compiled_registry.lock.json
+namespaces:
+  CAT: {path: catalog}
+  TAX: {path: taxonomy}
+  PRF: {path: profile}
+  IDN: {path: identity}
+  SUB: {path: submission}
+  ACC: {path: access}
+  SEC: {path: security}
+  LFC: {path: lifecycle}
+  UIX: {path: ui}
+  I18N: {path: i18n}

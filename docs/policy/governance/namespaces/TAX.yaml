@@ -1,0 +1,60 @@
+schema_version: '1.0'
+namespace: TAX
+responsibility: Define classification vocabulary, hierarchy, and assignments.
+exclusions:
+- catalog_membership
+- presentation_only
+- product_profile_field_definition
+owned_state:
+- taxonomy
+allowed_relations:
+- owns
+- assigns
+- references
+variants:
+  TAX_TERM:
+    subject_type: taxonomy
+    operation: define_term
+    object_type: term
+    state_owner: taxonomy
+    effect: term_semantics
+    authority: registry
+    phase: authoring
+    relation: owns
+  TAX_TERM_REF:
+    subject_type: product
+    operation: reference_term
+    object_type: term
+    state_owner: taxonomy
+    effect: term_semantics
+    authority: registry
+    phase: registered
+    relation: references
+  TAX_HIERARCHY:
+    subject_type: taxonomy
+    operation: define_hierarchy
+    object_type: term
+    state_owner: taxonomy
+    effect: hierarchy
+    authority: registry
+    phase: authoring
+    relation: owns
+  TAX_ASSIGNMENT:
+    subject_type: product
+    operation: assign_classification
+    object_type: assignment
+    state_owner: taxonomy
+    effect: assignment
+    authority: registry
+    phase: registered
+    relation: assigns
+entity_scope:
+- taxonomy
+- scheme
+- term
+- assignment
+decision_scope:
+- term_definition
+- term_reference
+- hierarchy_rule
+- assignment_rule

@@ -1,0 +1,49 @@
+schema_version: '1.0'
+namespace: CAT
+responsibility: Marketplace catalog inclusion, visibility, and projection-source decisions.
+exclusions:
+- presentation_only
+- taxonomy_definition
+- product_profile_field_definition
+owned_state:
+- catalog
+allowed_relations:
+- owns
+- selects
+variants:
+  CAT_VISIBILITY:
+    subject_type: marketplace
+    operation: decide_visibility
+    object_type: listing
+    state_owner: catalog
+    effect: visibility
+    authority: registry
+    phase: registered
+    relation: owns
+  CAT_MEMBERSHIP:
+    subject_type: package
+    operation: decide_membership
+    object_type: catalog_entry
+    state_owner: catalog
+    effect: membership
+    authority: registry
+    phase: registered
+    relation: owns
+  CAT_PROJECTION_SOURCE:
+    subject_type: marketplace
+    operation: select_projection_source
+    object_type: source_dataset
+    state_owner: catalog
+    effect: source_selection
+    authority: registry
+    phase: any
+    relation: selects
+entity_scope:
+- catalog
+- package
+- publisher
+- marketplace_profile
+decision_scope:
+- visibility
+- catalog_membership
+- projection_source

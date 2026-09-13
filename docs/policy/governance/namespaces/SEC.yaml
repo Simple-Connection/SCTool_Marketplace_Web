@@ -1,0 +1,58 @@
+schema_version: '1.0'
+namespace: SEC
+responsibility: Define abuse, bot, flood, rate-limit, detection, and blocking policies.
+exclusions:
+- normal_access_permission
+- tool_suspension
+- github_identity_verification
+owned_state:
+- security_control
+allowed_relations:
+- guards
+variants:
+  SEC_RESTRICT:
+    subject_type: request
+    operation: restrict_request
+    object_type: endpoint
+    state_owner: security_control
+    effect: restriction
+    authority: gateway
+    phase: any
+    relation: guards
+  SEC_DETECT:
+    subject_type: request
+    operation: detect_abuse
+    object_type: security_event
+    state_owner: security_control
+    effect: detection
+    authority: gateway
+    phase: any
+    relation: guards
+  SEC_BLOCK:
+    subject_type: request
+    operation: block_request
+    object_type: endpoint
+    state_owner: security_control
+    effect: blocking
+    authority: gateway
+    phase: any
+    relation: guards
+  SEC_RATE:
+    subject_type: request
+    operation: rate_limit
+    object_type: quota
+    state_owner: security_control
+    effect: rate_limit
+    authority: gateway
+    phase: any
+    relation: guards
+entity_scope:
+- request
+- actor
+- endpoint
+- quota
+- security_event
+decision_scope:
+- restriction
+- detection
+- blocking

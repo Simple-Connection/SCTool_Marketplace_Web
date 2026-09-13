@@ -1,0 +1,46 @@
+schema_version: '1.0'
+namespace: I18N
+responsibility: Define supported locale, platform label translation, and locale fallback.
+exclusions:
+- user_content_auto_translation
+- taxonomy_meaning_definition
+owned_state:
+- localization
+allowed_relations:
+- transforms
+variants:
+  I18N_LOCALE:
+    subject_type: platform
+    operation: define_supported_locale
+    object_type: locale
+    state_owner: localization
+    effect: locale_support
+    authority: web
+    phase: any
+    relation: transforms
+  I18N_LABEL:
+    subject_type: platform
+    operation: translate_platform_label
+    object_type: translation_key
+    state_owner: localization
+    effect: label_translation
+    authority: web
+    phase: any
+    relation: transforms
+  I18N_FALLBACK:
+    subject_type: platform
+    operation: define_locale_fallback
+    object_type: locale
+    state_owner: localization
+    effect: fallback
+    authority: web
+    phase: any
+    relation: transforms
+entity_scope:
+- locale
+- language_pack
+- translation_key
+decision_scope:
+- supported_locale
+- fallback
+- translation_source

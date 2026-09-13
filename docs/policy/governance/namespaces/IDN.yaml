@@ -1,0 +1,39 @@
+schema_version: '1.0'
+namespace: IDN
+responsibility: Define identity binding and ownership mapping.
+exclusions:
+- login_mechanism
+- repository_submission_request
+- abuse_protection
+owned_state:
+- identity
+allowed_relations:
+- owns
+- binds
+variants:
+  IDN_BIND_USER:
+    subject_type: user
+    operation: bind_identity
+    object_type: identity_record
+    state_owner: identity
+    effect: identity_binding
+    authority: registry
+    phase: any
+    relation: binds
+  IDN_OWNER:
+    subject_type: publisher
+    operation: map_ownership
+    object_type: repository_owner
+    state_owner: identity
+    effect: ownership_mapping
+    authority: registry
+    phase: any
+    relation: owns
+entity_scope:
+- user
+- publisher
+- organization
+- repository_owner
+decision_scope:
+- identity_binding
+- ownership_mapping

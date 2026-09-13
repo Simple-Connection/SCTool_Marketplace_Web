@@ -1,0 +1,58 @@
+schema_version: '1.0'
+namespace: UIX
+responsibility: Define presentation, navigation, component placement, and projections.
+exclusions:
+- source_meaning_definition
+- taxonomy_creation
+- product_metadata_definition
+- access_decision
+owned_state:
+- presentation
+allowed_relations:
+- projects
+variants:
+  UIX_VIEW:
+    subject_type: ui
+    operation: render_view
+    object_type: view
+    state_owner: presentation
+    effect: presentation
+    authority: web
+    phase: any
+    relation: projects
+  UIX_COMPONENT:
+    subject_type: ui
+    operation: place_component
+    object_type: component
+    state_owner: presentation
+    effect: presentation
+    authority: web
+    phase: any
+    relation: projects
+  UIX_NAV:
+    subject_type: ui
+    operation: define_navigation
+    object_type: navigation
+    state_owner: presentation
+    effect: navigation
+    authority: web
+    phase: any
+    relation: projects
+  UIX_PROJECT:
+    subject_type: ui
+    operation: project_data
+    object_type: projection
+    state_owner: presentation
+    effect: projection
+    authority: web
+    phase: any
+    relation: projects
+entity_scope:
+- view
+- navigation
+- page
+- component
+- projection
+decision_scope:
+- presentation_rule
+- source_authority_unchanged

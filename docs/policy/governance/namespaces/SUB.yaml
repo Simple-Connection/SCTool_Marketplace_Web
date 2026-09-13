@@ -1,0 +1,58 @@
+schema_version: '1.0'
+namespace: SUB
+responsibility: Define tool registration, revision, validation, and admission workflow.
+exclusions:
+- registered_tool_lifecycle
+- login_mechanism
+- product_profile_field_definition
+owned_state:
+- submission_request
+allowed_relations:
+- owns
+- transitions
+variants:
+  SUB_CREATE:
+    subject_type: publisher
+    operation: create_submission
+    object_type: submission
+    state_owner: submission_request
+    effect: request_state
+    authority: registry
+    phase: pre_registration
+    relation: owns
+  SUB_REVISE:
+    subject_type: publisher
+    operation: revise_submission
+    object_type: revision_request
+    state_owner: submission_request
+    effect: request_state
+    authority: registry
+    phase: pre_registration
+    relation: owns
+  SUB_VALIDATE:
+    subject_type: registry
+    operation: validate_submission
+    object_type: submission
+    state_owner: submission_request
+    effect: admission
+    authority: registry
+    phase: pre_registration
+    relation: owns
+  SUB_ADMIT:
+    subject_type: registry
+    operation: admit_submission
+    object_type: submission
+    state_owner: submission_request
+    effect: admission
+    authority: registry
+    phase: pre_registration
+    relation: transitions
+entity_scope:
+- submission
+- revision_request
+- repository
+- package
+decision_scope:
+- request_state
+- validation
+- admission_authority

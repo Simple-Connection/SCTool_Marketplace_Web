@@ -1,0 +1,57 @@
+schema_version: '1.0'
+namespace: LFC
+responsibility: Define registered tool lifecycle states and transitions.
+exclusions:
+- new_submission_workflow
+- catalog_visibility_only
+- rate_limit_rule
+owned_state:
+- tool_lifecycle
+allowed_relations:
+- owns
+- transitions
+variants:
+  LFC_TRANSITION:
+    subject_type: tool
+    operation: transition_tool_state
+    object_type: state
+    state_owner: tool_lifecycle
+    effect: state_transition
+    authority: registry
+    phase: registered
+    relation: transitions
+  LFC_TERMINAL:
+    subject_type: tool
+    operation: define_terminal_state
+    object_type: state
+    state_owner: tool_lifecycle
+    effect: terminal_state
+    authority: registry
+    phase: registered
+    relation: owns
+  LFC_SUSPEND:
+    subject_type: tool
+    operation: suspend_tool
+    object_type: state
+    state_owner: tool_lifecycle
+    effect: state_transition
+    authority: registry
+    phase: registered
+    relation: transitions
+  LFC_WITHDRAW:
+    subject_type: tool
+    operation: withdraw_tool
+    object_type: state
+    state_owner: tool_lifecycle
+    effect: state_transition
+    authority: registry
+    phase: registered
+    relation: transitions
+entity_scope:
+- tool
+- package
+- listing
+- state
+decision_scope:
+- state_transition
+- terminal_state

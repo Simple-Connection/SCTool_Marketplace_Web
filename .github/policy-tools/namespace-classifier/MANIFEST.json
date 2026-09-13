@@ -1,0 +1,19 @@
+{
+  "version": "7.2.0",
+  "source_of_truth": "docs/policy/governance/namespace_rules.yaml",
+  "source_mode": "MANIFEST_BOUND_SOURCE_SET",
+  "namespace_source_root": "docs/policy/governance/namespaces",
+  "semantic_lock": ".github/policy-tools/namespace-classifier/generated/compiled_registry.lock.json",
+  "compiler": ".github/policy-tools/namespace-classifier/compiler/compile_rules.py",
+  "runtime_engine": ".github/policy-tools/namespace-classifier/engine/classifier.py",
+  "tests": ".github/policy-tools/namespace-classifier/tests/test_core.py",
+  "runtime_properties": {
+    "ai": false,
+    "similarity": false,
+    "weighted_scoring": false,
+    "exact_tuple_lookup": true,
+    "namespace_extensible": true,
+    "boundary_enforcement": true,
+    "cross_namespace_edge_validation": true
+  }
+}

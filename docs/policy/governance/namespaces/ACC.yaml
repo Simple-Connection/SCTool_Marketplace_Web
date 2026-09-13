@@ -1,0 +1,50 @@
+schema_version: '1.0'
+namespace: ACC
+responsibility: Define authentication, session, and authorization decisions.
+exclusions:
+- identity_source_of_truth
+- abuse_protection
+- registry_admission_workflow
+owned_state:
+- access
+- session
+allowed_relations:
+- authorizes
+- owns
+variants:
+  ACC_AUTHN:
+    subject_type: principal
+    operation: authenticate
+    object_type: session
+    state_owner: access
+    effect: authentication
+    authority: gateway
+    phase: any
+    relation: authorizes
+  ACC_AUTHZ:
+    subject_type: principal
+    operation: authorize
+    object_type: resource
+    state_owner: access
+    effect: authorization
+    authority: gateway
+    phase: any
+    relation: authorizes
+  ACC_SESSION:
+    subject_type: principal
+    operation: issue_session
+    object_type: session
+    state_owner: session
+    effect: session_state
+    authority: gateway
+    phase: any
+    relation: owns
+entity_scope:
+- principal
+- user
+- session
+- resource
+- permission
+decision_scope:
+- authentication
+- authorization

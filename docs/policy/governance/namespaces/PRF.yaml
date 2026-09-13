@@ -1,0 +1,46 @@
+schema_version: '1.0'
+namespace: PRF
+responsibility: Define what information a marketplace product profile contains.
+exclusions:
+- taxonomy_value_definition
+- presentation_only
+- submission_admission_workflow
+owned_state:
+- product_profile
+allowed_relations:
+- owns
+variants:
+  PRF_REQUIRED:
+    subject_type: product_profile
+    operation: define_required_field
+    object_type: field
+    state_owner: product_profile
+    effect: field_schema
+    authority: registry
+    phase: authoring
+    relation: owns
+  PRF_OPTIONAL:
+    subject_type: product_profile
+    operation: define_optional_field
+    object_type: field
+    state_owner: product_profile
+    effect: field_schema
+    authority: registry
+    phase: authoring
+    relation: owns
+  PRF_PROHIBITED:
+    subject_type: product_profile
+    operation: define_prohibited_field
+    object_type: field
+    state_owner: product_profile
+    effect: field_schema
+    authority: registry
+    phase: authoring
+    relation: owns
+entity_scope:
+- product_profile
+- marketplace_profile
+decision_scope:
+- required_field
+- optional_field
+- prohibited_field
