@@ -49,18 +49,27 @@ if (await exists("site/registry")) {
   failures.push("site/registry must not contain committed canonical Registry distribution data.");
 }
 
-for (const path of await collectTextFiles("site"), ...await collectTextFiles("scripts"), ...await collectTextFiles(".github/workflows")) {
+const forbiddenMarkers = [
+  "SCTOOL_REGISTRY_" + "ROOT_PRIVATE_KEY_B64",
+  "SCTOOL_REGISTRY_" + "DISTRIBUTION_PRIVATE_KEY_B64",
+  "sign" + "Canonical(",
+  "create" + "PrivateKey(",
+  "crypto." + "sign(",
+  "subtle." + "sign(",
+];
+
+const scannedFiles = [
+  ...await collectTextFiles("site"),
+  ...await collectTextFiles("scripts"),
+  ...await collectTextFiles(".github/workflows"),
+];
+
+for (const path of scannedFiles) {
   const text = await readFile(path, "utf8");
-  const forbidden = [
-    "SCTOOL_REGISTRY_ROOT_PRIVATE_KEY_B64",
-    "SCTOOL_REGISTRY_DISTRIBUTION_PRIVATE_KEY_B64",
-    "signCanonical(",
-    "createPrivateKey(",
-    "crypto.sign(",
-    "subtle.sign(",
-  ];
-  for (const marker of forbidden) {
-    if (text.includes(marker)) failures.push(`${path} contains forbidden Registry signing/private-key marker: ${marker}`);
+  for (const marker of forbiddenMarkers) {
+    if (text.includes(marker)) {
+      failures.push(`${path} contains forbidden Registry signing/private-key marker: ${marker}`);
+    }
   }
 }
 
