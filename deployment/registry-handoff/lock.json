@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "marketplace-registry-handoff-lock/v1",
+  "producer": {
+    "repository": "Simple-Connection/sctool-registry",
+    "workflow": ".github/workflows/pages.yml",
+    "runId": 34757364135,
+    "runAttempt": 1,
+    "sourceRevision": "7cf8997640d2cbf03526ac0f9426ec190a72ca75",
+    "sourceRef": "refs/heads/main",
+    "conclusion": "success"
+  },
+  "distributionArtifact": {
+    "name": "registry-signed-distribution-7cf8997640d2cbf03526ac0f9426ec190a72ca75",
+    "id": 10317154228,
+    "digest": "sha256:f5beab394de7613d84ef6cd426246bd659a133b242ab5b599be59ad5fdd3a434",
+    "file": "registry-signed-distribution-7cf8997640d2cbf03526ac0f9426ec190a72ca75.zip"
+  },
+  "evidenceArtifact": {
+    "name": "registry-signed-distribution-handoff-7cf8997640d2cbf03526ac0f9426ec190a72ca75",
+    "id": 10317084559,
+    "digest": "sha256:de4b9ef91b02ec47bd3c986c2f4418ad7000f3cb9a753f17b07680a57803221c",
+    "file": "registry-signed-distribution-handoff-7cf8997640d2cbf03526ac0f9426ec190a72ca75.zip",
+    "evidenceFile": "registry-distribution-handoff.json"
+  },
+  "hosting": {
+    "targetPath": "/registry/",
+    "browserCutover": "PENDING_PUBLIC_ENDPOINT_VALIDATION"
+  }
+}

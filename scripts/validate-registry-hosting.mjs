@@ -7,6 +7,10 @@ function readArg(name) {
   return index >= 0 ? process.argv[index + 1] : undefined;
 }
 
+function hasFlag(name) {
+  return process.argv.includes(name);
+}
+
 async function exists(path) {
   try {
     await access(path);
@@ -27,7 +31,7 @@ async function collectTextFiles(root) {
         await walk(path);
       } else if (entry.isFile()) {
         const extension = extname(entry.name);
-        if ([".js", ".mjs", ".yml", ".yaml", ".html", ".md"].includes(extension)) files.push(path);
+        if ([".js", ".mjs", ".py", ".yml", ".yaml", ".html", ".md", ".json"].includes(extension)) files.push(path);
       }
     }
   }
@@ -43,7 +47,7 @@ const failures = [];
 const currentRegistryBase = "https://simple-connection.github.io/sctool-registry/";
 
 if (!client.includes(`REGISTRY_BASE_URL = "${currentRegistryBase}"`)) {
-  failures.push("Production Registry base URL changed before approved cutover.");
+  failures.push("Production Registry base URL changed before public /registry/ exact-byte validation.");
 }
 if (await exists("site/registry")) {
   failures.push("site/registry must not contain committed canonical Registry distribution data.");
@@ -62,6 +66,7 @@ const scannedFiles = [
   ...await collectTextFiles("site"),
   ...await collectTextFiles("scripts"),
   ...await collectTextFiles(".github/workflows"),
+  ...await collectTextFiles("deployment"),
 ];
 
 for (const path of scannedFiles) {
@@ -74,12 +79,15 @@ for (const path of scannedFiles) {
 }
 
 for (const marker of [
-  "node --test scripts/test-registry-hosting.mjs",
-  "node scripts/prepare-pages.mjs --out _site",
-  "node scripts/validate-registry-hosting.mjs --site-root _site",
+  "python scripts/verify-registry-handoff.py",
+  "--lock deployment/registry-handoff/lock.json",
+  "--materialize _site/registry",
+  "--require-registry",
+  "--public-base-url",
+  "registry-hosting-deployment-evidence.json",
   "path: ./_site",
 ]) {
-  if (!workflow.includes(marker)) failures.push(`Pages workflow is missing required Phase 1 gate: ${marker}`);
+  if (!workflow.includes(marker)) failures.push(`Pages workflow is missing required exact-handoff gate: ${marker}`);
 }
 
 const siteRoot = readArg("--site-root");
@@ -89,7 +97,9 @@ if (siteRoot) {
     if (!(await exists(join(root, ...path.split("/"))))) failures.push(`Assembled Pages artifact is missing ${path}`);
   }
   const registryPath = join(root, "registry");
-  if (await exists(registryPath)) {
+  if (!(await exists(registryPath))) {
+    if (hasFlag("--require-registry")) failures.push("Assembled Pages artifact is missing required /registry/ boundary.");
+  } else {
     try {
       await validateRegistryDistribution(registryPath);
     } catch (error) {
@@ -107,5 +117,8 @@ if (failures.length) {
 console.log("Registry hosting boundary validation PASS");
 console.log("W1_AUTHORITY_BOUNDARY=PASS");
 console.log("W2_SINGLE_PAGES_ARTIFACT_LAYOUT=PASS");
+console.log("W3_SIGNED_DISTRIBUTION_BYTE_PRESERVATION=PASS");
 console.log("W4_PRIVATE_KEY_EXCLUSION=PASS");
-console.log("W7_PRODUCTION_CUTOVER=BLOCKED_UNTIL_REGISTRY_HANDOFF");
+console.log("W5_FAIL_CLOSED_BROWSER_CONSUMER=PASS");
+console.log("W6_STATIC_SITE_REGRESSION=PASS");
+console.log("W7_PRODUCTION_CUTOVER=HOSTING_READY_BROWSER_CUTOVER_PENDING");

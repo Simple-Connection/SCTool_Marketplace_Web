@@ -36,11 +36,22 @@ jobs:
           node scripts/validate-registry-hosting.mjs
           node --test scripts/test-registry-hosting.mjs
 
+      - name: Verify exact Registry handoff
+        run: >-
+          python scripts/verify-registry-handoff.py
+          --lock deployment/registry-handoff/lock.json
+
       - name: Assemble single Pages artifact
         run: node scripts/prepare-pages.mjs --out _site
 
+      - name: Materialize exact signed Registry distribution
+        run: >-
+          python scripts/verify-registry-handoff.py
+          --lock deployment/registry-handoff/lock.json
+          --materialize _site/registry
+
       - name: Validate assembled Pages artifact
-        run: node scripts/validate-registry-hosting.mjs --site-root _site
+        run: node scripts/validate-registry-hosting.mjs --site-root _site --require-registry
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -53,3 +64,19 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify public Registry hosting exact bytes
+        run: >-
+          python scripts/verify-registry-handoff.py
+          --lock deployment/registry-handoff/lock.json
+          --public-base-url "${{ steps.deployment.outputs.page_url }}registry/"
+          --deployment-evidence registry-hosting-deployment-evidence.json
+          --target-revision "$GITHUB_SHA"
+
+      - name: Upload Registry hosting deployment evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: registry-hosting-deployment-evidence-${{ github.sha }}
+          path: registry-hosting-deployment-evidence.json
+          if-no-files-found: error
+          retention-days: 30
