@@ -158,7 +158,7 @@ if (siteRoot) {
   const root = resolve(siteRoot);
 
   for (const path of ["index.html", "assets/app.js", "assets/registry-client.js", "assets/styles.css"]) {
-    if (!(await exists(join(root, ...path.split("/")))) {
+    if (!(await exists(join(root, ...path.split("/"))))) {
       failures.push(`Assembled Pages artifact is missing ${path}`);
     }
   }
