@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "marketplace-registry-hosting-evidence/v1",
+  "consumer": {
+    "repository": "Simple-Connection/SCTool_Marketplace_Web",
+    "targetRevision": "da485d54cf328b5b7387cb544042cded3edba7ed",
+    "publicBaseUrl": "https://simple-connection.github.io/SCTool_Marketplace_Web/registry/"
+  },
+  "producer": {
+    "repository": "Simple-Connection/sctool-registry",
+    "workflow": ".github/workflows/pages.yml",
+    "runId": 34757364135,
+    "runAttempt": 1,
+    "sourceRevision": "7cf8997640d2cbf03526ac0f9426ec190a72ca75",
+    "sourceRef": "refs/heads/main",
+    "conclusion": "success"
+  },
+  "distributionArtifact": {
+    "name": "registry-signed-distribution-7cf8997640d2cbf03526ac0f9426ec190a72ca75",
+    "id": 10317154228,
+    "digest": "sha256:f5beab394de7613d84ef6cd426246bd659a133b242ab5b599be59ad5fdd3a434"
+  },
+  "evidenceArtifact": {
+    "name": "registry-signed-distribution-handoff-7cf8997640d2cbf03526ac0f9426ec190a72ca75",
+    "id": 10317084559,
+    "digest": "sha256:de4b9ef91b02ec47bd3c986c2f4418ad7000f3cb9a753f17b07680a57803221c"
+  },
+  "registry": {
+    "trustSequence": 1,
+    "sequence": 426,
+    "revision": "7cf8997640d2cbf03526ac0f9426ec190a72ca75",
+    "rootKeyId": "registry-root-2026-09",
+    "distributionKeyId": "registry-distribution-2026-09",
+    "snapshotPath": "snapshots/7cf8997640d2cbf03526ac0f9426ec190a72ca75.json"
+  },
+  "files": [
+    {
+      "path": "registry-head.json",
+      "sha256": "8f3fbc8124869c77ba971eabad93153696628d78760de2a968f5043e64abcb86",
+      "size": 732
+    },
+    {
+      "path": "snapshots/7cf8997640d2cbf03526ac0f9426ec190a72ca75.json",
+      "sha256": "417099ab3510f931b150dc379e760a962f9982546da02f1293b2085aef495366",
+      "size": 440
+    },
+    {
+      "path": "trust.json",
+      "sha256": "468482f5deb1c71b02742225761a3e33cf1186ab08fc21f4344c4d718b3879ba",
+      "size": 733
+    }
+  ],
+  "verification": {
+    "exactArtifactDigest": "PASS",
+    "exactEvidenceDigest": "PASS",
+    "exactEvidenceBinding": "PASS",
+    "exactFileSet": "PASS",
+    "fileSha256": "PASS",
+    "fileSize": "PASS",
+    "bytePreservation": "PASS",
+    "publicEndpointExactBytes": "PASS"
+  }
+}
