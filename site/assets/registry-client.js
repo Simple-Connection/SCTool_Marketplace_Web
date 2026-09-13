@@ -16,22 +16,31 @@ function nonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function assertHead(head) {
+export function assertRegistryHead(head) {
   if (!isObject(head) || !isObject(head.signed)) {
     throw new MarketplaceDataError("INVALID_HEAD", "Registry head 형식을 확인할 수 없습니다.");
   }
   const { revision, sequence, snapshot } = head.signed;
-  if (!nonEmptyString(revision) || !Number.isSafeInteger(sequence) || !isObject(snapshot)) {
+  if (!nonEmptyString(revision) || !Number.isSafeInteger(sequence) || sequence < 1 || !isObject(snapshot)) {
     throw new MarketplaceDataError("INVALID_HEAD", "Registry head의 revision/sequence/snapshot이 올바르지 않습니다.");
   }
-  if (!nonEmptyString(snapshot.path) || !nonEmptyString(snapshot.sha256)) {
-    throw new MarketplaceDataError("INVALID_HEAD", "Registry snapshot 위치 또는 SHA-256이 없습니다.");
+  if (!/^[0-9a-f]{40,64}$/.test(revision)) {
+    throw new MarketplaceDataError("INVALID_HEAD", "Registry head의 revision 형식이 올바르지 않습니다.");
+  }
+  if (
+    !nonEmptyString(snapshot.path) ||
+    !/^[0-9a-f]{64}$/.test(snapshot.sha256 ?? "") ||
+    !Number.isSafeInteger(snapshot.size) ||
+    snapshot.size < 1
+  ) {
+    throw new MarketplaceDataError("INVALID_HEAD", "Registry snapshot 위치, SHA-256 또는 크기가 올바르지 않습니다.");
   }
 }
 
-function resolveSnapshotUrl(path) {
+export function resolveSnapshotUrl(path, baseUrl = REGISTRY_BASE_URL) {
   if (
     !nonEmptyString(path) ||
+    !/^snapshots\/[0-9a-f]{40,64}\.json$/.test(path) ||
     path.startsWith("/") ||
     path.includes("\\") ||
     path.split("/").includes("..")
@@ -39,7 +48,7 @@ function resolveSnapshotUrl(path) {
     throw new MarketplaceDataError("UNSAFE_SNAPSHOT_PATH", "Registry snapshot 경로가 안전하지 않습니다.");
   }
 
-  const base = new URL(REGISTRY_BASE_URL);
+  const base = new URL(baseUrl);
   const url = new URL(path, base);
   if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname)) {
     throw new MarketplaceDataError("UNSAFE_SNAPSHOT_PATH", "Registry snapshot이 허용된 배포 경계를 벗어났습니다.");
@@ -47,10 +56,14 @@ function resolveSnapshotUrl(path) {
   return url;
 }
 
-async function fetchText(url, cache = "default") {
+async function fetchText(url, cache = "default", fetchImpl = globalThis.fetch) {
+  if (typeof fetchImpl !== "function") {
+    throw new MarketplaceDataError("NETWORK_UNAVAILABLE", "Registry fetch 기능을 사용할 수 없습니다.");
+  }
+
   let response;
   try {
-    response = await fetch(url, {
+    response = await fetchImpl(url, {
       method: "GET",
       headers: { Accept: "application/json" },
       cache,
@@ -72,12 +85,12 @@ async function fetchText(url, cache = "default") {
   return response.text();
 }
 
-async function sha256Hex(text) {
-  if (!globalThis.crypto?.subtle) {
+async function sha256Hex(text, cryptoImpl = globalThis.crypto) {
+  if (!cryptoImpl?.subtle) {
     throw new MarketplaceDataError("CRYPTO_UNAVAILABLE", "브라우저의 SHA-256 검증 기능을 사용할 수 없습니다.");
   }
   const bytes = new TextEncoder().encode(text);
-  const digest = await globalThis.crypto.subtle.digest("SHA-256", bytes);
+  const digest = await cryptoImpl.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest), (value) => value.toString(16).padStart(2, "0")).join("");
 }
 
@@ -185,15 +198,27 @@ export function projectMarketplace(snapshot) {
   return { items, skipped };
 }
 
-export async function loadMarketplace() {
-  const headUrl = new URL("registry-head.json", REGISTRY_BASE_URL);
-  const headText = await fetchText(headUrl, "no-store");
+export async function loadMarketplace({
+  baseUrl = REGISTRY_BASE_URL,
+  fetchImpl = globalThis.fetch,
+  cryptoImpl = globalThis.crypto,
+} = {}) {
+  const headUrl = new URL("registry-head.json", baseUrl);
+  const headText = await fetchText(headUrl, "no-store", fetchImpl);
   const head = parseJson(headText, "Registry head");
-  assertHead(head);
+  assertRegistryHead(head);
 
-  const snapshotUrl = resolveSnapshotUrl(head.signed.snapshot.path);
-  const snapshotText = await fetchText(snapshotUrl, "default");
-  const actualSha256 = await sha256Hex(snapshotText);
+  const snapshotUrl = resolveSnapshotUrl(head.signed.snapshot.path, baseUrl);
+  const snapshotText = await fetchText(snapshotUrl, "default", fetchImpl);
+  const snapshotBytes = new TextEncoder().encode(snapshotText);
+  if (snapshotBytes.byteLength !== head.signed.snapshot.size) {
+    throw new MarketplaceDataError(
+      "SNAPSHOT_SIZE_MISMATCH",
+      "Registry snapshot 크기 검증에 실패했습니다.",
+    );
+  }
+
+  const actualSha256 = await sha256Hex(snapshotText, cryptoImpl);
   const expectedSha256 = head.signed.snapshot.sha256.toLowerCase();
 
   if (actualSha256 !== expectedSha256) {
@@ -204,10 +229,14 @@ export async function loadMarketplace() {
   }
 
   const snapshot = parseJson(snapshotText, "Registry snapshot");
-  if (snapshot.revision !== head.signed.revision || snapshot.sequence !== head.signed.sequence) {
+  if (
+    snapshot.revision !== head.signed.revision ||
+    snapshot.sequence !== head.signed.sequence ||
+    snapshot.source?.commit !== head.signed.revision
+  ) {
     throw new MarketplaceDataError(
       "SNAPSHOT_IDENTITY_MISMATCH",
-      "Registry head와 snapshot의 revision/sequence가 일치하지 않습니다.",
+      "Registry head와 snapshot의 revision/sequence/source identity가 일치하지 않습니다.",
     );
   }
 
