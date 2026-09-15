@@ -1,0 +1,140 @@
+schema_version: "1.0"
+document_type: marketplace_authority_policy
+status: APPROVED_FOR_IMPLEMENTATION
+approved_on: "2026-09-15"
+
+model:
+  namespace: Semantic responsibility classification.
+  decision_authority: The authority that owns the meaning and decision semantics for that responsibility.
+  execution_boundary: The runtime boundary that enforces or executes the decision.
+  repository_ownership: The repository responsible for the approved authority or execution implementation boundary.
+  routing_actor: A routing participant that has no semantic decision authority merely by performing routing.
+
+separation_rules:
+  namespace_is_not_authority: true
+  decision_authority_is_not_execution_boundary: true
+  execution_boundary_is_not_repository_ownership: true
+  routing_actor_is_not_decision_authority: true
+  implementation_location_does_not_transfer_semantic_ownership: true
+
+execution_boundaries:
+  REGISTRY:
+    meaning: Registry-side execution and canonical Registry contract boundary.
+  GATEWAY:
+    meaning: Request access and security enforcement boundary immediately before protected application resources.
+  WEB:
+    meaning: Marketplace presentation and localization execution boundary.
+
+namespace_authorities:
+  CAT:
+    decision_authority: CATALOG_AUTHORITY
+    execution_boundary: REGISTRY
+    repository_owner: Simple-Connection/sctool-registry
+    ownership_scope: Catalog membership, visibility, and projection-source decision semantics.
+  TAX:
+    decision_authority: TAXONOMY_AUTHORITY
+    execution_boundary: REGISTRY
+    repository_owner: Simple-Connection/sctool-registry
+    ownership_scope: Taxonomy vocabulary, hierarchy, term semantics, and classification assignment semantics.
+  PRF:
+    decision_authority: PROFILE_CONTRACT_AUTHORITY
+    execution_boundary: REGISTRY
+    repository_owner: Simple-Connection/sctool-registry
+    ownership_scope: Marketplace product-profile field contract semantics.
+  IDN:
+    decision_authority: IDENTITY_AUTHORITY
+    execution_boundary: REGISTRY
+    repository_owner: Simple-Connection/sctool-registry
+    ownership_scope: Canonical identity binding and publisher/repository ownership mapping semantics.
+  SUB:
+    decision_authority: SUBMISSION_AUTHORITY
+    execution_boundary: REGISTRY
+    repository_owner: Simple-Connection/sctool-registry
+    ownership_scope: Submission, revision, validation, and admission workflow semantics.
+  LFC:
+    decision_authority: LIFECYCLE_AUTHORITY
+    execution_boundary: REGISTRY
+    repository_owner: Simple-Connection/sctool-registry
+    ownership_scope: Registered tool lifecycle state and transition semantics.
+  ACC:
+    decision_authority: ACCESS_AUTHORITY
+    execution_boundary: GATEWAY
+    repository_owner: Simple-Connection/SC_Linked_App
+    ownership_scope: Authentication, session, and normal resource authorization decision semantics.
+  SEC:
+    decision_authority: SECURITY_CONTROL_AUTHORITY
+    execution_boundary: GATEWAY
+    repository_owner: Simple-Connection/SC_Linked_App
+    ownership_scope: Abuse detection, rate limiting, request restriction, and request blocking semantics.
+  UIX:
+    decision_authority: PRESENTATION_AUTHORITY
+    execution_boundary: WEB
+    repository_owner: Simple-Connection/SCTool_Marketplace_Web
+    ownership_scope: Marketplace presentation, navigation, component placement, and projection semantics.
+  I18N:
+    decision_authority: LOCALIZATION_AUTHORITY
+    execution_boundary: WEB
+    repository_owner: Simple-Connection/SCTool_Marketplace_Web
+    ownership_scope: Supported locale, platform label translation, and fallback semantics.
+
+gateway_boundary:
+  repository_owner: Simple-Connection/SC_Linked_App
+  role: PRIMARY_GATEWAY_EXECUTION_BOUNDARY
+  responsibilities:
+    access:
+      authority: ACCESS_AUTHORITY
+      owns:
+        - AUTHENTICATION_DECISION
+        - SESSION_ENFORCEMENT
+        - NORMAL_RESOURCE_AUTHORIZATION
+        - CLIENT_REGISTRATION_ACCESS_ENFORCEMENT
+      does_not_own:
+        - CANONICAL_IDENTITY_TRUTH
+        - PUBLISHER_OWNERSHIP_TRUTH
+        - ABUSE_POLICY_SEMANTICS
+    security:
+      authority: SECURITY_CONTROL_AUTHORITY
+      owns:
+        - RATE_LIMIT_ENFORCEMENT
+        - ABUSE_DETECTION
+        - FLOOD_OR_BOT_RESTRICTION
+        - MALICIOUS_REQUEST_BLOCKING
+        - SECURITY_REQUEST_CONSTRAINT
+      does_not_own:
+        - NORMAL_ACCESS_PERMISSION
+        - REGISTERED_TOOL_LIFECYCLE
+        - CANONICAL_IDENTITY_TRUTH
+  shared_execution_capabilities:
+    - CREDENTIAL_VERIFICATION
+    - REQUEST_SIGNATURE_VERIFICATION
+    - REQUEST_AUDIT_AND_REDACTION
+    - PROTECTED_RESOURCE_GATE
+  prohibited_ownership:
+    - CATALOG_SEMANTICS
+    - TAXONOMY_SEMANTICS
+    - PRODUCT_PROFILE_SCHEMA
+    - SUBMISSION_ADMISSION_SEMANTICS
+    - REGISTERED_PACKAGE_LIFECYCLE_SEMANTICS
+    - MARKETPLACE_PRESENTATION_SEMANTICS
+    - LOCALIZATION_SEMANTICS
+    - REGISTRY_SIGNING_OR_TRUST_ROOT
+
+routing_actors:
+  DETERMINISTIC_ROUTER:
+    authority_effect: NONE
+  AI_ASSIST:
+    authority_effect: NONE
+  HUMAN_REVIEW:
+    authority_effect: REVIEW_ONLY_UNLESS_SEPARATELY_AUTHORIZED
+
+legacy_claim_authority:
+  current_values:
+    - registry
+    - gateway
+    - web
+  interpretation: EXECUTION_BOUNDARY
+  not_interpreted_as: DECISION_AUTHORITY
+  migration:
+    immediate_tuple_breaking_rename: FORBIDDEN
+    future_major_schema_option: RENAME_AUTHORITY_TO_EXECUTION_BOUNDARY
+    decision_authority_source: NAMESPACE_METADATA_OR_COMPILED_REGISTRY
