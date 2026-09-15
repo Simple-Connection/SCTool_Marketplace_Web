@@ -1,0 +1,65 @@
+schema_version: "1.0"
+document_type: marketplace_schema_responsibility_policy
+status: APPROVED_FOR_IMPLEMENTATION
+approved_on: "2026-09-15"
+
+root: docs/policy/schemas
+
+directory_policy:
+  responsibility_first: true
+  nested_responsibility_directories: FORBIDDEN
+  new_responsibility_directory:
+    allowed_when:
+      - RESPONSIBILITY_BOUNDARY_IS_DISTINCT
+      - EXISTING_RESPONSIBILITY_DIRECTORY_WOULD_MIX_OWNERSHIP
+    naming: LOWERCASE_RESPONSIBILITY_NAME
+
+responsibilities:
+  namespace:
+    directory: docs/policy/schemas/namespace
+    nested_directories: FORBIDDEN
+    owns:
+      - NAMESPACE_RULES_SCHEMA
+      - NAMESPACE_SOURCE_SCHEMA
+      - COMPILED_REGISTRY_SCHEMA
+      - SEMANTIC_LOCK_SCHEMA
+    does_not_own:
+      - ROUTING_INPUT_OR_OUTCOME
+      - PREPARATION_NORMALIZATION
+      - AUTHORITY_RESOLUTION
+  routing:
+    directory: docs/policy/schemas/routing
+    nested_directories: FORBIDDEN
+    owns:
+      - ROUTING_CANDIDATE_SCHEMA
+      - ROUTING_RESULT_SCHEMA
+      - ROUTING_CONTRACT_SCHEMA
+    does_not_own:
+      - NAMESPACE_ONTOLOGY
+      - PREPARATION_NORMALIZATION
+      - AUTHORITY_SEMANTICS
+  preparation:
+    directory: docs/policy/schemas/preparation
+    nested_directories: FORBIDDEN
+    owns:
+      - PREPARATION_INPUT_SCHEMA
+      - NORMALIZED_CLAIM_SCHEMA
+      - CLASSIFIER_IMPROVEMENT_CANDIDATE_SCHEMA
+    does_not_own:
+      - FINAL_NAMESPACE_DECISION
+      - FINAL_AUTHORITY_DECISION
+  authority:
+    directory: docs/policy/schemas/authority
+    nested_directories: FORBIDDEN
+    owns:
+      - AUTHORITY_CONTRACT_SCHEMA
+      - AUTHORITY_RESOLUTION_SCHEMA
+    does_not_own:
+      - NAMESPACE_VARIANT_DEFINITION
+      - ROUTING_ALGORITHM
+      - PREPARATION_RULES
+
+extension_example:
+  responsibility: DOCUMENT_PREPARATION
+  directory: docs/policy/schemas/preparation
+  rule: Use a new top-level responsibility directory only when the responsibility boundary is distinct; do not create deeper nested responsibility directories.
