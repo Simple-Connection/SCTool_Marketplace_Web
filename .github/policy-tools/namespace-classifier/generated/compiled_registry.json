@@ -11,32 +11,68 @@
   ],
   "cross_namespace_edges": {
     "authorizes_principal": {
-      "allowed_from": ["ACC"],
-      "allowed_to": ["IDN"],
+      "allowed_from": [
+        "ACC"
+      ],
+      "allowed_to": [
+        "IDN"
+      ],
       "description": "ACC owns access decisions, not identity source of truth.",
       "ownership_transfer": false
     },
     "guards_resource": {
-      "allowed_from": ["SEC"],
-      "allowed_to": ["CAT","TAX","PRF","IDN","SUB","ACC","LFC","UIX","I18N"],
+      "allowed_from": [
+        "SEC"
+      ],
+      "allowed_to": [
+        "CAT",
+        "TAX",
+        "PRF",
+        "IDN",
+        "SUB",
+        "ACC",
+        "LFC",
+        "UIX",
+        "I18N"
+      ],
       "description": "SEC owns protection decisions, not protected resource semantics.",
       "ownership_transfer": false
     },
     "projects_from": {
-      "allowed_from": ["UIX"],
-      "allowed_to": ["CAT","TAX","PRF","IDN","SUB","ACC","SEC","LFC","I18N"],
+      "allowed_from": [
+        "UIX"
+      ],
+      "allowed_to": [
+        "CAT",
+        "TAX",
+        "PRF",
+        "IDN",
+        "SUB",
+        "ACC",
+        "SEC",
+        "LFC",
+        "I18N"
+      ],
       "description": "Projection owns presentation only; source authority remains unchanged.",
       "ownership_transfer": false
     },
     "reads": {
-      "allowed_from": ["*"],
-      "allowed_to": ["*"],
+      "allowed_from": [
+        "*"
+      ],
+      "allowed_to": [
+        "*"
+      ],
       "description": "Reading another namespace never changes claim ownership.",
       "ownership_transfer": false
     },
     "references": {
-      "allowed_from": ["*"],
-      "allowed_to": ["*"],
+      "allowed_from": [
+        "*"
+      ],
+      "allowed_to": [
+        "*"
+      ],
       "description": "Referencing another namespace never changes claim ownership.",
       "ownership_transfer": false
     }
@@ -45,160 +81,493 @@
   "generated": true,
   "namespaces": {
     "ACC": {
-      "allowed_relations": ["authorizes","owns"],
-      "decision_scope": ["authentication","authorization"],
-      "entity_scope": ["principal","user","session","resource","permission"],
-      "exclusion_rules": [
-        {"id":"identity_source_of_truth","namespaces":["IDN"]},
-        {"id":"abuse_protection","namespaces":["SEC"]},
-        {"id":"registry_admission_workflow","namespaces":["SUB"]}
+      "allowed_relations": [
+        "authorizes",
+        "owns"
       ],
-      "exclusions": ["identity_source_of_truth","abuse_protection","registry_admission_workflow"],
-      "owned_state": ["access","session"],
+      "decision_scope": [
+        "authentication",
+        "authorization"
+      ],
+      "entity_scope": [
+        "principal",
+        "user",
+        "session",
+        "resource",
+        "permission"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "identity_source_of_truth",
+          "namespaces": [
+            "IDN"
+          ]
+        },
+        {
+          "id": "abuse_protection",
+          "namespaces": [
+            "SEC"
+          ]
+        },
+        {
+          "id": "registry_admission_workflow",
+          "namespaces": [
+            "SUB"
+          ]
+        }
+      ],
+      "exclusions": [
+        "identity_source_of_truth",
+        "abuse_protection",
+        "registry_admission_workflow"
+      ],
+      "owned_state": [
+        "access",
+        "session"
+      ],
       "responsibility": "Define authentication, session, and authorization decisions.",
       "routable": true,
       "source": "namespaces/ACC.yaml",
       "status": "ACTIVE"
     },
     "CAT": {
-      "allowed_relations": ["owns","selects"],
-      "decision_scope": ["visibility","catalog_membership","projection_source"],
-      "entity_scope": ["catalog","package","publisher","marketplace_profile"],
-      "exclusion_rules": [
-        {"id":"presentation_only","namespaces":["UIX"]},
-        {"id":"taxonomy_definition","namespaces":["TAX"]},
-        {"id":"product_profile_field_definition","namespaces":["PRF"]}
+      "allowed_relations": [
+        "owns",
+        "selects"
       ],
-      "exclusions": ["presentation_only","taxonomy_definition","product_profile_field_definition"],
-      "owned_state": ["catalog"],
+      "decision_scope": [
+        "visibility",
+        "catalog_membership",
+        "projection_source"
+      ],
+      "entity_scope": [
+        "catalog",
+        "package",
+        "publisher",
+        "marketplace_profile"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "presentation_only",
+          "namespaces": [
+            "UIX"
+          ]
+        },
+        {
+          "id": "taxonomy_definition",
+          "namespaces": [
+            "TAX"
+          ]
+        },
+        {
+          "id": "product_profile_field_definition",
+          "namespaces": [
+            "PRF"
+          ]
+        }
+      ],
+      "exclusions": [
+        "presentation_only",
+        "taxonomy_definition",
+        "product_profile_field_definition"
+      ],
+      "owned_state": [
+        "catalog"
+      ],
       "responsibility": "Marketplace catalog inclusion, visibility, and projection-source decisions.",
       "routable": true,
       "source": "namespaces/CAT.yaml",
       "status": "ACTIVE"
     },
     "I18N": {
-      "allowed_relations": ["transforms"],
-      "decision_scope": ["supported_locale","fallback","translation_source"],
-      "entity_scope": ["locale","language_pack","translation_key"],
-      "exclusion_rules": [
-        {"id":"user_content_auto_translation","namespaces":[],"operations":["translate_user_content"]},
-        {"id":"taxonomy_meaning_definition","namespaces":["TAX"]}
+      "allowed_relations": [
+        "transforms"
       ],
-      "exclusions": ["user_content_auto_translation","taxonomy_meaning_definition"],
-      "owned_state": ["localization"],
+      "decision_scope": [
+        "supported_locale",
+        "fallback",
+        "translation_source"
+      ],
+      "entity_scope": [
+        "locale",
+        "language_pack",
+        "translation_key"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "user_content_auto_translation",
+          "namespaces": [],
+          "operations": [
+            "translate_user_content"
+          ]
+        },
+        {
+          "id": "taxonomy_meaning_definition",
+          "namespaces": [
+            "TAX"
+          ]
+        }
+      ],
+      "exclusions": [
+        "user_content_auto_translation",
+        "taxonomy_meaning_definition"
+      ],
+      "owned_state": [
+        "localization"
+      ],
       "responsibility": "Define supported locale, platform label translation, and locale fallback.",
       "routable": true,
       "source": "namespaces/I18N.yaml",
       "status": "ACTIVE"
     },
     "IDN": {
-      "allowed_relations": ["owns","binds"],
-      "decision_scope": ["identity_binding","ownership_mapping"],
-      "entity_scope": ["user","publisher","organization","repository_owner"],
-      "exclusion_rules": [
-        {"id":"login_mechanism","namespaces":["ACC"]},
-        {"id":"repository_submission_request","namespaces":["SUB"]},
-        {"id":"abuse_protection","namespaces":["SEC"]}
+      "allowed_relations": [
+        "owns",
+        "binds"
       ],
-      "exclusions": ["login_mechanism","repository_submission_request","abuse_protection"],
-      "owned_state": ["identity"],
+      "decision_scope": [
+        "identity_binding",
+        "ownership_mapping"
+      ],
+      "entity_scope": [
+        "user",
+        "publisher",
+        "organization",
+        "repository_owner"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "login_mechanism",
+          "namespaces": [
+            "ACC"
+          ]
+        },
+        {
+          "id": "repository_submission_request",
+          "namespaces": [
+            "SUB"
+          ]
+        },
+        {
+          "id": "abuse_protection",
+          "namespaces": [
+            "SEC"
+          ]
+        }
+      ],
+      "exclusions": [
+        "login_mechanism",
+        "repository_submission_request",
+        "abuse_protection"
+      ],
+      "owned_state": [
+        "identity"
+      ],
       "responsibility": "Define identity binding and ownership mapping.",
       "routable": true,
       "source": "namespaces/IDN.yaml",
       "status": "ACTIVE"
     },
     "LFC": {
-      "allowed_relations": ["owns","transitions"],
-      "decision_scope": ["state_transition","terminal_state"],
-      "entity_scope": ["tool","package","listing","state"],
-      "exclusion_rules": [
-        {"id":"new_submission_workflow","namespaces":["SUB"]},
-        {"id":"catalog_visibility_only","namespaces":["CAT"]},
-        {"id":"rate_limit_rule","namespaces":["SEC"]}
+      "allowed_relations": [
+        "owns",
+        "transitions"
       ],
-      "exclusions": ["new_submission_workflow","catalog_visibility_only","rate_limit_rule"],
-      "owned_state": ["tool_lifecycle"],
+      "decision_scope": [
+        "state_transition",
+        "terminal_state"
+      ],
+      "entity_scope": [
+        "tool",
+        "package",
+        "listing",
+        "state"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "new_submission_workflow",
+          "namespaces": [
+            "SUB"
+          ]
+        },
+        {
+          "id": "catalog_visibility_only",
+          "namespaces": [
+            "CAT"
+          ]
+        },
+        {
+          "id": "rate_limit_rule",
+          "namespaces": [
+            "SEC"
+          ]
+        }
+      ],
+      "exclusions": [
+        "new_submission_workflow",
+        "catalog_visibility_only",
+        "rate_limit_rule"
+      ],
+      "owned_state": [
+        "tool_lifecycle"
+      ],
       "responsibility": "Define registered tool lifecycle states and transitions.",
       "routable": true,
       "source": "namespaces/LFC.yaml",
       "status": "ACTIVE"
     },
     "PRF": {
-      "allowed_relations": ["owns"],
-      "decision_scope": ["required_field","optional_field","prohibited_field"],
-      "entity_scope": ["product_profile","marketplace_profile"],
-      "exclusion_rules": [
-        {"id":"taxonomy_value_definition","namespaces":["TAX"]},
-        {"id":"presentation_only","namespaces":["UIX"]},
-        {"id":"submission_admission_workflow","namespaces":["SUB"]}
+      "allowed_relations": [
+        "owns"
       ],
-      "exclusions": ["taxonomy_value_definition","presentation_only","submission_admission_workflow"],
-      "owned_state": ["product_profile"],
+      "decision_scope": [
+        "required_field",
+        "optional_field",
+        "prohibited_field"
+      ],
+      "entity_scope": [
+        "product_profile",
+        "marketplace_profile"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "taxonomy_value_definition",
+          "namespaces": [
+            "TAX"
+          ]
+        },
+        {
+          "id": "presentation_only",
+          "namespaces": [
+            "UIX"
+          ]
+        },
+        {
+          "id": "submission_admission_workflow",
+          "namespaces": [
+            "SUB"
+          ]
+        }
+      ],
+      "exclusions": [
+        "taxonomy_value_definition",
+        "presentation_only",
+        "submission_admission_workflow"
+      ],
+      "owned_state": [
+        "product_profile"
+      ],
       "responsibility": "Define what information a marketplace product profile contains.",
       "routable": true,
       "source": "namespaces/PRF.yaml",
       "status": "ACTIVE"
     },
     "SEC": {
-      "allowed_relations": ["guards"],
-      "decision_scope": ["restriction","detection","blocking"],
-      "entity_scope": ["request","actor","endpoint","quota","security_event"],
-      "exclusion_rules": [
-        {"id":"normal_access_permission","namespaces":["ACC"]},
-        {"id":"tool_suspension","namespaces":["LFC"]},
-        {"id":"github_identity_verification","namespaces":["IDN"]}
+      "allowed_relations": [
+        "guards"
       ],
-      "exclusions": ["normal_access_permission","tool_suspension","github_identity_verification"],
-      "owned_state": ["security_control"],
+      "decision_scope": [
+        "restriction",
+        "detection",
+        "blocking"
+      ],
+      "entity_scope": [
+        "request",
+        "actor",
+        "endpoint",
+        "quota",
+        "security_event"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "normal_access_permission",
+          "namespaces": [
+            "ACC"
+          ]
+        },
+        {
+          "id": "tool_suspension",
+          "namespaces": [
+            "LFC"
+          ]
+        },
+        {
+          "id": "github_identity_verification",
+          "namespaces": [
+            "IDN"
+          ]
+        }
+      ],
+      "exclusions": [
+        "normal_access_permission",
+        "tool_suspension",
+        "github_identity_verification"
+      ],
+      "owned_state": [
+        "security_control"
+      ],
       "responsibility": "Define abuse, bot, flood, rate-limit, detection, and blocking policies.",
       "routable": true,
       "source": "namespaces/SEC.yaml",
       "status": "ACTIVE"
     },
     "SUB": {
-      "allowed_relations": ["owns","transitions"],
-      "decision_scope": ["request_state","validation","admission_authority"],
-      "entity_scope": ["submission","revision_request","repository","package"],
-      "exclusion_rules": [
-        {"id":"registered_tool_lifecycle","namespaces":["LFC"]},
-        {"id":"login_mechanism","namespaces":["ACC"]},
-        {"id":"product_profile_field_definition","namespaces":["PRF"]}
+      "allowed_relations": [
+        "owns",
+        "transitions"
       ],
-      "exclusions": ["registered_tool_lifecycle","login_mechanism","product_profile_field_definition"],
-      "owned_state": ["submission_request"],
+      "decision_scope": [
+        "request_state",
+        "validation",
+        "admission_authority"
+      ],
+      "entity_scope": [
+        "submission",
+        "revision_request",
+        "repository",
+        "package"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "registered_tool_lifecycle",
+          "namespaces": [
+            "LFC"
+          ]
+        },
+        {
+          "id": "login_mechanism",
+          "namespaces": [
+            "ACC"
+          ]
+        },
+        {
+          "id": "product_profile_field_definition",
+          "namespaces": [
+            "PRF"
+          ]
+        }
+      ],
+      "exclusions": [
+        "registered_tool_lifecycle",
+        "login_mechanism",
+        "product_profile_field_definition"
+      ],
+      "owned_state": [
+        "submission_request"
+      ],
       "responsibility": "Define tool registration, revision, validation, and admission workflow.",
       "routable": true,
       "source": "namespaces/SUB.yaml",
       "status": "ACTIVE"
     },
     "TAX": {
-      "allowed_relations": ["owns","assigns","references"],
-      "decision_scope": ["term_definition","term_reference","hierarchy_rule","assignment_rule"],
-      "entity_scope": ["taxonomy","scheme","term","assignment"],
-      "exclusion_rules": [
-        {"id":"catalog_membership","namespaces":["CAT"]},
-        {"id":"presentation_only","namespaces":["UIX"]},
-        {"id":"product_profile_field_definition","namespaces":["PRF"]}
+      "allowed_relations": [
+        "owns",
+        "assigns",
+        "references"
       ],
-      "exclusions": ["catalog_membership","presentation_only","product_profile_field_definition"],
-      "owned_state": ["taxonomy"],
+      "decision_scope": [
+        "term_definition",
+        "term_reference",
+        "hierarchy_rule",
+        "assignment_rule"
+      ],
+      "entity_scope": [
+        "taxonomy",
+        "scheme",
+        "term",
+        "assignment"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "catalog_membership",
+          "namespaces": [
+            "CAT"
+          ]
+        },
+        {
+          "id": "presentation_only",
+          "namespaces": [
+            "UIX"
+          ]
+        },
+        {
+          "id": "product_profile_field_definition",
+          "namespaces": [
+            "PRF"
+          ]
+        }
+      ],
+      "exclusions": [
+        "catalog_membership",
+        "presentation_only",
+        "product_profile_field_definition"
+      ],
+      "owned_state": [
+        "taxonomy"
+      ],
       "responsibility": "Define classification vocabulary, hierarchy, and assignments.",
       "routable": true,
       "source": "namespaces/TAX.yaml",
       "status": "ACTIVE"
     },
     "UIX": {
-      "allowed_relations": ["projects"],
-      "decision_scope": ["presentation_rule","source_authority_unchanged"],
-      "entity_scope": ["view","navigation","page","component","projection"],
-      "exclusion_rules": [
-        {"id":"source_meaning_definition","namespaces":["CAT","TAX","PRF","IDN","SUB","ACC","SEC","LFC"]},
-        {"id":"taxonomy_creation","namespaces":["TAX"]},
-        {"id":"product_metadata_definition","namespaces":["PRF"]},
-        {"id":"access_decision","namespaces":["ACC"]}
+      "allowed_relations": [
+        "projects"
       ],
-      "exclusions": ["source_meaning_definition","taxonomy_creation","product_metadata_definition","access_decision"],
-      "owned_state": ["presentation"],
+      "decision_scope": [
+        "presentation_rule",
+        "source_authority_unchanged"
+      ],
+      "entity_scope": [
+        "view",
+        "navigation",
+        "page",
+        "component",
+        "projection"
+      ],
+      "exclusion_rules": [
+        {
+          "id": "source_meaning_definition",
+          "namespaces": [
+            "CAT",
+            "TAX",
+            "PRF",
+            "IDN",
+            "SUB",
+            "ACC",
+            "SEC",
+            "LFC"
+          ]
+        },
+        {
+          "id": "taxonomy_creation",
+          "namespaces": [
+            "TAX"
+          ]
+        },
+        {
+          "id": "product_metadata_definition",
+          "namespaces": [
+            "PRF"
+          ]
+        },
+        {
+          "id": "access_decision",
+          "namespaces": [
+            "ACC"
+          ]
+        }
+      ],
+      "exclusions": [
+        "source_meaning_definition",
+        "taxonomy_creation",
+        "product_metadata_definition",
+        "access_decision"
+      ],
+      "owned_state": [
+        "presentation"
+      ],
       "responsibility": "Define presentation, navigation, component placement, and projections.",
       "routable": true,
       "source": "namespaces/UIX.yaml",
@@ -214,39 +583,175 @@
     "source_set_sha256": "b96738a7af9b17b5c96ed0f21b6d578518563b2bce918888988950fbee30e6d9"
   },
   "tuple_index": {
-    "02951ca5d53b5069a96df0f78b1f6c08608bd42d7a1ed81915bdcdea0e70ff15":{"namespace":"SUB","namespace_status":"ACTIVE","variant_id":"SUB_VALIDATE"},
-    "02c7834c9735853e34dd1755b3ac66ac971d5d9b9dcaa03d640af769c8328dd4":{"namespace":"PRF","namespace_status":"ACTIVE","variant_id":"PRF_REQUIRED"},
-    "035260819155a49d66f8be0be82c5055e4a5ea5237aac471c169d3ccf375072d":{"namespace":"LFC","namespace_status":"ACTIVE","variant_id":"LFC_TERMINAL"},
-    "089338d13e72fb323b44923146c1ada42545f017ca34b172d27bebf4f3cc4e3d":{"namespace":"UIX","namespace_status":"ACTIVE","variant_id":"UIX_VIEW"},
-    "0d9cccf85b7d6be33d201c5f36a9958b1d529b653f38c59992d7c8122a0770ad":{"namespace":"SEC","namespace_status":"ACTIVE","variant_id":"SEC_BLOCK"},
-    "0ebbfcb26d5e3ce8e23e3dfd07bda8e389b3db119413255ce23217f1d9f5a1d8":{"namespace":"I18N","namespace_status":"ACTIVE","variant_id":"I18N_FALLBACK"},
-    "21d332a9e14fa831e3f557eed9225b30d3427f1baeb9375ba7f316ee6718b41d":{"namespace":"IDN","namespace_status":"ACTIVE","variant_id":"IDN_BIND_USER"},
-    "2a89b0b01e5079a54a8a5cd1f0a9e3630a9a048473d48330c0628d2e73a86a1a":{"namespace":"TAX","namespace_status":"ACTIVE","variant_id":"TAX_TERM"},
-    "2c0de6f2e4370f1b35ef9facff4189d1fa774a417e3419de057bbea104dfd355":{"namespace":"PRF","namespace_status":"ACTIVE","variant_id":"PRF_OPTIONAL"},
-    "32fcc182dcbd3098a7b0db1c2770f490b9f43bf68df7af77f6e6b061968db617":{"namespace":"CAT","namespace_status":"ACTIVE","variant_id":"CAT_VISIBILITY"},
-    "48446e76041a7027a67f6ec7d2d8db8af9d133d06a947c68dd4e3cfe53a5481c":{"namespace":"ACC","namespace_status":"ACTIVE","variant_id":"ACC_AUTHZ"},
-    "4c6b15eb28a1a2504e1d32c61ce930867889467c73275eebfac446494e6158c3":{"namespace":"LFC","namespace_status":"ACTIVE","variant_id":"LFC_WITHDRAW"},
-    "4cc97e8d9259e0d899c15fda1c3c6ebdd396fe56ac7c43a1812628f2eac8c308":{"namespace":"UIX","namespace_status":"ACTIVE","variant_id":"UIX_NAV"},
-    "4d0db703a48e2f3d6cb121559b6b051ba5c5e7a1e96318155e31702600886367":{"namespace":"LFC","namespace_status":"ACTIVE","variant_id":"LFC_TRANSITION"},
-    "6127ccb20c61c9502e3ed292f40882e146eb48791c33c9f8fcf891b63458690c":{"namespace":"ACC","namespace_status":"ACTIVE","variant_id":"ACC_SESSION"},
-    "621a63925753aa946466573b8f7596bffca23dfeab640e43f1696f9839f81fa4":{"namespace":"I18N","namespace_status":"ACTIVE","variant_id":"I18N_LABEL"},
-    "642b1d87637861534344055d127e33ddff2247bbdfbd9fe4e9a30eef235e1170":{"namespace":"UIX","namespace_status":"ACTIVE","variant_id":"UIX_COMPONENT"},
-    "675e31d404eaaad6c76c501e514bb291f92a9514291a0da5cb9b42b1f7188aad":{"namespace":"SUB","namespace_status":"ACTIVE","variant_id":"SUB_REVISE"},
-    "682bc2ce4f0300ba487bdc78b3f5b1599b2de83bdda65f9d558bf5d1f9a16bd9":{"namespace":"UIX","namespace_status":"ACTIVE","variant_id":"UIX_PROJECT"},
-    "72d4c510bf224c323137a8adbe14bf131a65a5df4a445ae330d52969f4250ff8":{"namespace":"SUB","namespace_status":"ACTIVE","variant_id":"SUB_ADMIT"},
-    "78db49510b93fd77b04cff8ab687475f7b70f5c52efed656f1c86f64a9d82e13":{"namespace":"SUB","namespace_status":"ACTIVE","variant_id":"SUB_CREATE"},
-    "7a6f220815fd3e7a1f3a369c1f1de0841be7c413ff822efd50c791cf0e6553e6":{"namespace":"PRF","namespace_status":"ACTIVE","variant_id":"PRF_PROHIBITED"},
-    "8196a3f8545d0adfde3dc6c8b2fc368308fb90b5b39c72e6a124c85a77fd149c":{"namespace":"ACC","namespace_status":"ACTIVE","variant_id":"ACC_AUTHN"},
-    "92296ec7492110d235aa85ae520fe1fad7d790a9b1664a2dc53a3a1c705ee940":{"namespace":"SEC","namespace_status":"ACTIVE","variant_id":"SEC_RATE"},
-    "993f5b4f4714e7030133d717fac69d368e2a10dc67bcf49ce6ede0e82ce54b94":{"namespace":"CAT","namespace_status":"ACTIVE","variant_id":"CAT_PROJECTION_SOURCE"},
-    "99ffd5f112ea6885495357dba16eaad164b3e7fba1663023668047337480bb59":{"namespace":"LFC","namespace_status":"ACTIVE","variant_id":"LFC_SUSPEND"},
-    "9c7329996bd0655122322f57a40b70624301da628761e82f49b3b629f8f5d9c0":{"namespace":"I18N","namespace_status":"ACTIVE","variant_id":"I18N_LOCALE"},
-    "9e1954ab2ac877b1331ec39aafa81713517b59242a86469f21f0d6d25a4cfd82":{"namespace":"SEC","namespace_status":"ACTIVE","variant_id":"SEC_DETECT"},
-    "b32de4fd0229ec70362fcba82526f147a0be7d8a58aae126abc647fdbe6d8964":{"namespace":"IDN","namespace_status":"ACTIVE","variant_id":"IDN_OWNER"},
-    "d307c68ab30afd2f163065ccc7a16e06100de9e61709ec2b74f82e2951edb810":{"namespace":"CAT","namespace_status":"ACTIVE","variant_id":"CAT_MEMBERSHIP"},
-    "e495cc0e03bc4f84a4977b89fa1284ebeb718559a404f1a2c8891b5bcc16fbd3":{"namespace":"TAX","namespace_status":"ACTIVE","variant_id":"TAX_TERM_REF"},
-    "e8c7c07bce9041a7584d768b441b1f609824d5d0506348c2abed1a01a2a04d0a":{"namespace":"SEC","namespace_status":"ACTIVE","variant_id":"SEC_RESTRICT"},
-    "f55154c937a39afe9367355b46a87cf9dbd8aeaf7f0fc26692329d759d85c794":{"namespace":"TAX","namespace_status":"ACTIVE","variant_id":"TAX_ASSIGNMENT"},
-    "fdd28b464cf92aee26c48b593abd40fa1464d6630426f4f85309c0d151564eab":{"namespace":"TAX","namespace_status":"ACTIVE","variant_id":"TAX_HIERARCHY"}
+    "02951ca5d53b5069a96df0f78b1f6c08608bd42d7a1ed81915bdcdea0e70ff15": {
+      "namespace": "SUB",
+      "namespace_status": "ACTIVE",
+      "variant_id": "SUB_VALIDATE"
+    },
+    "02c7834c9735853e34dd1755b3ac66ac971d5d9b9dcaa03d640af769c8328dd4": {
+      "namespace": "PRF",
+      "namespace_status": "ACTIVE",
+      "variant_id": "PRF_REQUIRED"
+    },
+    "035260819155a49d66f8be0be82c5055e4a5ea5237aac471c169d3ccf375072d": {
+      "namespace": "LFC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "LFC_TERMINAL"
+    },
+    "089338d13e72fb323b44923146c1ada42545f017ca34b172d27bebf4f3cc4e3d": {
+      "namespace": "UIX",
+      "namespace_status": "ACTIVE",
+      "variant_id": "UIX_VIEW"
+    },
+    "0d9cccf85b7d6be33d201c5f36a9958b1d529b653f38c59992d7c8122a0770ad": {
+      "namespace": "SEC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "SEC_BLOCK"
+    },
+    "0ebbfcb26d5e3ce8e23e3dfd07bda8e389b3db119413255ce23217f1d9f5a1d8": {
+      "namespace": "I18N",
+      "namespace_status": "ACTIVE",
+      "variant_id": "I18N_FALLBACK"
+    },
+    "21d332a9e14fa831e3f557eed9225b30d3427f1baeb9375ba7f316ee6718b41d": {
+      "namespace": "IDN",
+      "namespace_status": "ACTIVE",
+      "variant_id": "IDN_BIND_USER"
+    },
+    "2a89b0b01e5079a54a8a5cd1f0a9e3630a9a048473d48330c0628d2e73a86a1a": {
+      "namespace": "TAX",
+      "namespace_status": "ACTIVE",
+      "variant_id": "TAX_TERM"
+    },
+    "2c0de6f2e4370f1b35ef9facff4189d1fa774a417e3419de057bbea104dfd355": {
+      "namespace": "PRF",
+      "namespace_status": "ACTIVE",
+      "variant_id": "PRF_OPTIONAL"
+    },
+    "32fcc182dcbd3098a7b0db1c2770f490b9f43bf68df7af77f6e6b061968db617": {
+      "namespace": "CAT",
+      "namespace_status": "ACTIVE",
+      "variant_id": "CAT_VISIBILITY"
+    },
+    "48446e76041a7027a67f6ec7d2d8db8af9d133d06a947c68dd4e3cfe53a5481c": {
+      "namespace": "ACC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "ACC_AUTHZ"
+    },
+    "4c6b15eb28a1a2504e1d32c61ce930867889467c73275eebfac446494e6158c3": {
+      "namespace": "LFC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "LFC_WITHDRAW"
+    },
+    "4cc97e8d9259e0d899c15fda1c3c6ebdd396fe56ac7c43a1812628f2eac8c308": {
+      "namespace": "UIX",
+      "namespace_status": "ACTIVE",
+      "variant_id": "UIX_NAV"
+    },
+    "4d0db703a48e2f3d6cb121559b6b051ba5c5e7a1e96318155e31702600886367": {
+      "namespace": "LFC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "LFC_TRANSITION"
+    },
+    "6127ccb20c61c9502e3ed292f40882e146eb48791c33c9f8fcf891b63458690c": {
+      "namespace": "ACC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "ACC_SESSION"
+    },
+    "621a63925753aa946466573b8f7596bffca23dfeab640e43f1696f9839f81fa4": {
+      "namespace": "I18N",
+      "namespace_status": "ACTIVE",
+      "variant_id": "I18N_LABEL"
+    },
+    "642b1d87637861534344055d127e33ddff2247bbdfbd9fe4e9a30eef235e1170": {
+      "namespace": "UIX",
+      "namespace_status": "ACTIVE",
+      "variant_id": "UIX_COMPONENT"
+    },
+    "675e31d404eaaad6c76c501e514bb291f92a9514291a0da5cb9b42b1f7188aad": {
+      "namespace": "SUB",
+      "namespace_status": "ACTIVE",
+      "variant_id": "SUB_REVISE"
+    },
+    "682bc2ce4f0300ba487bdc78b3f5b1599b2de83bdda65f9d558bf5d1f9a16bd9": {
+      "namespace": "UIX",
+      "namespace_status": "ACTIVE",
+      "variant_id": "UIX_PROJECT"
+    },
+    "72d4c510bf224c323137a8adbe14bf131a65a5df4a445ae330d52969f4250ff8": {
+      "namespace": "SUB",
+      "namespace_status": "ACTIVE",
+      "variant_id": "SUB_ADMIT"
+    },
+    "78db49510b93fd77b04cff8ab687475f7b70f5c52efed656f1c86f64a9d82e13": {
+      "namespace": "SUB",
+      "namespace_status": "ACTIVE",
+      "variant_id": "SUB_CREATE"
+    },
+    "7a6f220815fd3e7a1f3a369c1f1de0841be7c413ff822efd50c791cf0e6553e6": {
+      "namespace": "PRF",
+      "namespace_status": "ACTIVE",
+      "variant_id": "PRF_PROHIBITED"
+    },
+    "8196a3f8545d0adfde3dc6c8b2fc368308fb90b5b39c72e6a124c85a77fd149c": {
+      "namespace": "ACC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "ACC_AUTHN"
+    },
+    "92296ec7492110d235aa85ae520fe1fad7d790a9b1664a2dc53a3a1c705ee940": {
+      "namespace": "SEC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "SEC_RATE"
+    },
+    "993f5b4f4714e7030133d717fac69d368e2a10dc67bcf49ce6ede0e82ce54b94": {
+      "namespace": "CAT",
+      "namespace_status": "ACTIVE",
+      "variant_id": "CAT_PROJECTION_SOURCE"
+    },
+    "99ffd5f112ea6885495357dba16eaad164b3e7fba1663023668047337480bb59": {
+      "namespace": "LFC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "LFC_SUSPEND"
+    },
+    "9c7329996bd0655122322f57a40b70624301da628761e82f49b3b629f8f5d9c0": {
+      "namespace": "I18N",
+      "namespace_status": "ACTIVE",
+      "variant_id": "I18N_LOCALE"
+    },
+    "9e1954ab2ac877b1331ec39aafa81713517b59242a86469f21f0d6d25a4cfd82": {
+      "namespace": "SEC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "SEC_DETECT"
+    },
+    "b32de4fd0229ec70362fcba82526f147a0be7d8a58aae126abc647fdbe6d8964": {
+      "namespace": "IDN",
+      "namespace_status": "ACTIVE",
+      "variant_id": "IDN_OWNER"
+    },
+    "d307c68ab30afd2f163065ccc7a16e06100de9e61709ec2b74f82e2951edb810": {
+      "namespace": "CAT",
+      "namespace_status": "ACTIVE",
+      "variant_id": "CAT_MEMBERSHIP"
+    },
+    "e495cc0e03bc4f84a4977b89fa1284ebeb718559a404f1a2c8891b5bcc16fbd3": {
+      "namespace": "TAX",
+      "namespace_status": "ACTIVE",
+      "variant_id": "TAX_TERM_REF"
+    },
+    "e8c7c07bce9041a7584d768b441b1f609824d5d0506348c2abed1a01a2a04d0a": {
+      "namespace": "SEC",
+      "namespace_status": "ACTIVE",
+      "variant_id": "SEC_RESTRICT"
+    },
+    "f55154c937a39afe9367355b46a87cf9dbd8aeaf7f0fc26692329d759d85c794": {
+      "namespace": "TAX",
+      "namespace_status": "ACTIVE",
+      "variant_id": "TAX_ASSIGNMENT"
+    },
+    "fdd28b464cf92aee26c48b593abd40fa1464d6630426f4f85309c0d151564eab": {
+      "namespace": "TAX",
+      "namespace_status": "ACTIVE",
+      "variant_id": "TAX_HIERARCHY"
+    }
   }
 }
