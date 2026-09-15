@@ -91,7 +91,8 @@ classifier_improvement:
 
 compiled_registry:
   approved_runtime_model: GENERATED_COMPILED_REGISTRY
-  planned_artifact: .github/policy-tools/namespace-classifier/generated/compiled_registry.json
+  artifact: .github/policy-tools/namespace-classifier/generated/compiled_registry.json
+  implementation_status: INITIAL_CONTRACT_ACTIVE
   lock_artifact: .github/policy-tools/namespace-classifier/generated/compiled_registry.lock.json
   runtime_source_of_semantics: COMPILED_REGISTRY_ONLY
   runtime_rebuild_from_authority_yaml: FORBIDDEN
