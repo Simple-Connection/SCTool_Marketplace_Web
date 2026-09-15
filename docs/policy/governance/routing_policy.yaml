@@ -1,0 +1,170 @@
+schema_version: "1.0"
+document_type: marketplace_routing_policy
+status: APPROVED_FOR_IMPLEMENTATION
+approved_on: "2026-09-15"
+
+scope:
+  - POLICY_CANDIDATE_PREPARATION
+  - NAMESPACE_CLASSIFICATION
+  - AI_ASSIST
+  - MACHINE_REVERIFICATION
+  - CLASSIFIER_IMPROVEMENT
+  - AUTHORITY_RESOLUTION
+  - ROUTING_OUTCOME
+
+principles:
+  deterministic_first: true
+  ai_assist_only: true
+  ai_may_issue_final_route: false
+  machine_reverification_after_ai: REQUIRED
+  nearest_namespace_guessing: FORBIDDEN
+  probabilistic_score_as_final_authority: FORBIDDEN
+  repeated_ai_gap_should_be_absorbed_by_machine_rules: REQUIRED
+  runtime_policy_self_mutation: FORBIDDEN
+  route_is_logical_not_filesystem_placement: true
+
+pipeline:
+  - stage: INTAKE
+    responsibility: Validate candidate structure before semantic routing.
+  - stage: PREPARATION
+    responsibility: Apply deterministic normalization, known aliases, explicit metadata mappings, and claim preparation.
+  - stage: MACHINE_CLASSIFIER
+    responsibility: Classify only against the verified compiled registry using exact deterministic rules.
+  - stage: AI_ELIGIBILITY
+    responsibility: Decide by explicit reason code whether unresolved input may use AI assistance.
+  - stage: AI_ASSIST
+    responsibility: Propose normalized claims, missing claim values, or responsibility splits; never issue the final namespace decision.
+  - stage: MACHINE_RECHECK
+    responsibility: Require exact machine verification of every AI-assisted proposal.
+  - stage: CLASSIFIER_IMPROVEMENT
+    responsibility: Convert successfully resolved recurring gaps into deterministic improvement candidates so the same gap does not require repeated AI assistance.
+  - stage: AUTHORITY_RESOLUTION
+    responsibility: Resolve decision authority, execution boundary, and repository ownership independently from namespace classification.
+  - stage: ROUTING_RESULT
+    responsibility: Emit a stable routing outcome, reason codes, provenance, namespace evidence, and authority evidence.
+
+ai_policy:
+  target_operating_model:
+    deterministic_share: "80-90% or higher"
+    ai_assist_share: "10-20% or lower"
+    ai_direct_final_route_share: "0%"
+    machine_verified_final_route_share: "100%"
+  eligibility_is_state_based: true
+  eligible_reason_classes:
+    - NORMALIZATION_GAP
+    - CLAIM_COMPLETION_GAP
+    - SEMANTIC_SPLIT_PROPOSAL
+  non_eligible_reason_classes:
+    - INTEGRITY_FAILURE
+    - BOUNDARY_VIOLATION
+    - DECLARED_NAMESPACE_MISMATCH
+    - INVALID_EDGE
+    - UNKNOWN_DECLARED_NAMESPACE
+  output_contract:
+    may_propose_claims: true
+    may_propose_split: true
+    may_create_namespace: false
+    may_create_variant: false
+    may_bypass_machine_recheck: false
+
+classifier_improvement:
+  trigger: AI_ASSIST_SUCCEEDED_AND_MACHINE_RECHECK_PASSED
+  required: true
+  gap_classes:
+    NORMALIZATION_GAP:
+      action: PROPOSE_DETERMINISTIC_NORMALIZATION_RULE
+      semantic_authority_change: false
+    VARIANT_GAP:
+      action: PROPOSE_NAMESPACE_VARIANT
+      semantic_authority_change: true
+    ONTOLOGY_GAP:
+      action: REQUIRE_HUMAN_REVIEW
+      semantic_authority_change: true
+  automatic_authority_source_edit: FORBIDDEN
+  promotion_requirements:
+    - COMPILER_VALIDATION
+    - COLLISION_CHECK
+    - BOUNDARY_CHECK
+    - REGRESSION_TESTS
+    - SEMANTIC_LOCK_REFRESH
+  objective: Repeated equivalent inputs should move from AI-assisted routing to deterministic routing after an approved improvement is promoted.
+
+compiled_registry:
+  approved_runtime_model: GENERATED_COMPILED_REGISTRY
+  planned_artifact: .github/policy-tools/namespace-classifier/generated/compiled_registry.json
+  lock_artifact: .github/policy-tools/namespace-classifier/generated/compiled_registry.lock.json
+  runtime_source_of_semantics: COMPILED_REGISTRY_ONLY
+  runtime_rebuild_from_authority_yaml: FORBIDDEN
+  startup_checks:
+    - LOCK_PRESENT
+    - COMPILED_REGISTRY_PRESENT
+    - COMPILED_REGISTRY_HASH_MATCH
+    - AUTHORITY_SOURCE_SET_HASH_MATCH
+  stale_rule_behavior: BLOCK_ROUTING
+
+outcomes:
+  initial:
+    ROUTED:
+      meaning: One machine-verified namespace and authority route is valid.
+    SPLIT_REQUIRED:
+      meaning: Multiple independent responsibilities must be separated rather than arbitrarily selecting one namespace.
+    REVIEW_REQUIRED:
+      meaning: A semantic, variant, ontology, or authority decision cannot be safely automated.
+    BLOCKED:
+      meaning: Integrity, schema, boundary, or other hard contract failure prevents routing.
+  extensible: true
+  extension_rule:
+    - Do not create a new outcome when a reason code under an existing outcome is sufficient.
+    - A new outcome is allowed when using an existing outcome would cause an external actor to take the wrong action.
+    - The new outcome must represent a distinct responsibility boundary, not merely a more detailed reason.
+
+reason_code_policy:
+  outcome_and_reason_are_separate: true
+  categories:
+    integrity:
+      examples:
+        - LOCK_MISSING
+        - SOURCE_LOCK_STALE
+        - COMPILED_REGISTRY_MISSING
+        - COMPILED_REGISTRY_HASH_MISMATCH
+        - INDEX_SCHEMA_INVALID
+        - INDEX_REGISTRY_MISMATCH
+    input:
+      examples:
+        - INPUT_SCHEMA_INVALID
+        - CLAIMS_MISSING
+        - CLAIM_FIELDS_MISSING
+        - INVALID_CLAIM_FIELD
+        - INVALID_EDGE
+    classification:
+      examples:
+        - EXACT_MATCH
+        - NO_EXACT_MATCH
+        - MULTI_RESPONSIBILITY
+        - BOUNDARY_VIOLATION
+        - DECLARED_NAMESPACE_MISMATCH
+        - UNKNOWN_DECLARED_NAMESPACE
+    ai:
+      examples:
+        - AI_ASSIST_USED
+        - AI_OUTPUT_SCHEMA_INVALID
+        - AI_EXACT_CONFIRMATION_FAILED
+        - AI_PROPOSED_SPLIT
+    ontology:
+      examples:
+        - ONTOLOGY_GAP
+        - NEW_VARIANT_REQUIRED
+        - NEW_NAMESPACE_REVIEW_REQUIRED
+
+namespace_source_ownership:
+  owner: docs/policy/governance/namespace_rules.yaml
+  owns:
+    - NAMESPACE_MEMBERSHIP
+    - NAMESPACE_SOURCE_PATH
+    - NAMESPACE_STATUS
+    - NAMESPACE_LIFECYCLE_METADATA
+  policy_index_must_not_duplicate_namespace_membership: true
+  policy_index_must_not_duplicate_namespace_path_or_status: true
+
+schema_responsibility_policy: schema_responsibility_policy.yaml
+authority_policy: authority_policy.yaml
