@@ -1,11 +1,12 @@
-schema_version: 7.2.0
+schema_version: 7.3.0
 authority_contract:
   single_source_of_truth: docs/policy/governance/namespace_rules.yaml
-  generated_artifact: .github/policy-tools/namespace-classifier/generated/compiled_registry.lock.json
+  compiled_registry: .github/policy-tools/namespace-classifier/generated/compiled_registry.json
+  semantic_lock: .github/policy-tools/namespace-classifier/generated/compiled_registry.lock.json
   generated_artifact_editable: false
   classifier: .github/policy-tools/namespace-classifier/engine/classifier.py
-  runtime_ai: false
-  runtime_scoring: false
+  runtime_semantics: COMPILED_REGISTRY_ONLY
+  runtime_source_rebuild: false
 namespace_contract:
   extensible: true
   minimum_count: 1
@@ -21,168 +22,71 @@ claim_fields:
 - relation
 vocabulary:
   closed_fields:
-    authority:
-    - registry
-    - gateway
-    - web
-    phase:
-    - authoring
-    - pre_registration
-    - registered
-    - any
-    relation:
-    - owns
-    - selects
-    - assigns
-    - references
-    - binds
-    - transitions
-    - authorizes
-    - guards
-    - projects
-    - transforms
+    authority: [registry, gateway, web]
+    phase: [authoring, pre_registration, registered, any]
+    relation: [owns, selects, assigns, references, binds, transitions, authorizes, guards, projects, transforms]
   identifier_pattern: ^[a-z][a-z0-9_]*$
 boundary_terms:
-  presentation_only:
-    namespaces:
-    - UIX
-  taxonomy_definition:
-    namespaces:
-    - TAX
-  taxonomy_value_definition:
-    namespaces:
-    - TAX
-  taxonomy_creation:
-    namespaces:
-    - TAX
-  taxonomy_meaning_definition:
-    namespaces:
-    - TAX
-  product_profile_field_definition:
-    namespaces:
-    - PRF
-  product_metadata_definition:
-    namespaces:
-    - PRF
-  catalog_membership:
-    namespaces:
-    - CAT
-  catalog_visibility_only:
-    namespaces:
-    - CAT
-  submission_admission_workflow:
-    namespaces:
-    - SUB
-  repository_submission_request:
-    namespaces:
-    - SUB
-  registry_admission_workflow:
-    namespaces:
-    - SUB
-  new_submission_workflow:
-    namespaces:
-    - SUB
-  login_mechanism:
-    namespaces:
-    - ACC
-  normal_access_permission:
-    namespaces:
-    - ACC
-  access_decision:
-    namespaces:
-    - ACC
-  identity_source_of_truth:
-    namespaces:
-    - IDN
-  github_identity_verification:
-    namespaces:
-    - IDN
-  abuse_protection:
-    namespaces:
-    - SEC
-  rate_limit_rule:
-    namespaces:
-    - SEC
-  registered_tool_lifecycle:
-    namespaces:
-    - LFC
-  tool_suspension:
-    namespaces:
-    - LFC
-  source_meaning_definition:
-    namespaces:
-    - CAT
-    - TAX
-    - PRF
-    - IDN
-    - SUB
-    - ACC
-    - SEC
-    - LFC
+  presentation_only: {namespaces: [UIX]}
+  taxonomy_definition: {namespaces: [TAX]}
+  taxonomy_value_definition: {namespaces: [TAX]}
+  taxonomy_creation: {namespaces: [TAX]}
+  taxonomy_meaning_definition: {namespaces: [TAX]}
+  product_profile_field_definition: {namespaces: [PRF]}
+  product_metadata_definition: {namespaces: [PRF]}
+  catalog_membership: {namespaces: [CAT]}
+  catalog_visibility_only: {namespaces: [CAT]}
+  submission_admission_workflow: {namespaces: [SUB]}
+  repository_submission_request: {namespaces: [SUB]}
+  registry_admission_workflow: {namespaces: [SUB]}
+  new_submission_workflow: {namespaces: [SUB]}
+  login_mechanism: {namespaces: [ACC]}
+  normal_access_permission: {namespaces: [ACC]}
+  access_decision: {namespaces: [ACC]}
+  identity_source_of_truth: {namespaces: [IDN]}
+  github_identity_verification: {namespaces: [IDN]}
+  abuse_protection: {namespaces: [SEC]}
+  rate_limit_rule: {namespaces: [SEC]}
+  registered_tool_lifecycle: {namespaces: [LFC]}
+  tool_suspension: {namespaces: [LFC]}
+  source_meaning_definition: {namespaces: [CAT, TAX, PRF, IDN, SUB, ACC, SEC, LFC]}
   user_content_auto_translation:
     namespaces: []
-    operations:
-    - translate_user_content
+    operations: [translate_user_content]
 cross_namespace_edges:
   reads:
     ownership_transfer: false
     description: Reading another namespace never changes claim ownership.
-    allowed_from:
-    - '*'
-    allowed_to:
-    - '*'
+    allowed_from: ['*']
+    allowed_to: ['*']
   references:
     ownership_transfer: false
     description: Referencing another namespace never changes claim ownership.
-    allowed_from:
-    - '*'
-    allowed_to:
-    - '*'
+    allowed_from: ['*']
+    allowed_to: ['*']
   projects_from:
     ownership_transfer: false
     description: Projection owns presentation only; source authority remains unchanged.
-    allowed_from:
-    - UIX
-    allowed_to:
-    - CAT
-    - TAX
-    - PRF
-    - IDN
-    - SUB
-    - ACC
-    - SEC
-    - LFC
-    - I18N
+    allowed_from: [UIX]
+    allowed_to: [CAT, TAX, PRF, IDN, SUB, ACC, SEC, LFC, I18N]
   guards_resource:
     ownership_transfer: false
     description: SEC owns protection decisions, not protected resource semantics.
-    allowed_from:
-    - SEC
-    allowed_to:
-    - CAT
-    - TAX
-    - PRF
-    - IDN
-    - SUB
-    - ACC
-    - LFC
-    - UIX
-    - I18N
+    allowed_from: [SEC]
+    allowed_to: [CAT, TAX, PRF, IDN, SUB, ACC, LFC, UIX, I18N]
   authorizes_principal:
     ownership_transfer: false
     description: ACC owns access decisions, not identity source of truth.
-    allowed_from:
-    - ACC
-    allowed_to:
-    - IDN
+    allowed_from: [ACC]
+    allowed_to: [IDN]
 namespace_sources:
-  CAT: namespaces/CAT.yaml
-  TAX: namespaces/TAX.yaml
-  PRF: namespaces/PRF.yaml
-  IDN: namespaces/IDN.yaml
-  SUB: namespaces/SUB.yaml
-  ACC: namespaces/ACC.yaml
-  SEC: namespaces/SEC.yaml
-  LFC: namespaces/LFC.yaml
-  UIX: namespaces/UIX.yaml
-  I18N: namespaces/I18N.yaml
+  CAT: {source: namespaces/CAT.yaml, status: ACTIVE}
+  TAX: {source: namespaces/TAX.yaml, status: ACTIVE}
+  PRF: {source: namespaces/PRF.yaml, status: ACTIVE}
+  IDN: {source: namespaces/IDN.yaml, status: ACTIVE}
+  SUB: {source: namespaces/SUB.yaml, status: ACTIVE}
+  ACC: {source: namespaces/ACC.yaml, status: ACTIVE}
+  SEC: {source: namespaces/SEC.yaml, status: ACTIVE}
+  LFC: {source: namespaces/LFC.yaml, status: ACTIVE}
+  UIX: {source: namespaces/UIX.yaml, status: ACTIVE}
+  I18N: {source: namespaces/I18N.yaml, status: ACTIVE}
