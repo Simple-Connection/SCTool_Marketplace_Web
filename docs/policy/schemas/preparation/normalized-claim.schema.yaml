@@ -1,0 +1,27 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/preparation/normalized-claim
+type: object
+additionalProperties: false
+required: [schema_version, claim, provenance]
+properties:
+  schema_version: {const: '1.0'}
+  claim:
+    type: object
+    additionalProperties: false
+    required: [subject_type, operation, object_type, state_owner, effect, authority, phase, relation]
+    properties:
+      subject_type: {type: string}
+      operation: {type: string}
+      object_type: {type: string}
+      state_owner: {type: string}
+      effect: {type: string}
+      authority: {type: string}
+      phase: {type: string}
+      relation: {type: string}
+  provenance:
+    type: object
+    additionalProperties: false
+    required: [origin]
+    properties:
+      origin: {enum: [DIRECT, DETERMINISTIC_NORMALIZATION, AI_ASSIST]}
+      rule_ids: {type: array, items: {type: string}}

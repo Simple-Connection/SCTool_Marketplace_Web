@@ -1,0 +1,53 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/namespace/namespace-source
+$defs:
+  identifier: {type: string, pattern: '^[a-z][a-z0-9_]*$'}
+  claim:
+    type: object
+    additionalProperties: false
+    required: [subject_type, operation, object_type, state_owner, effect, authority, phase, relation]
+    properties:
+      subject_type: {$ref: '#/$defs/identifier'}
+      operation: {$ref: '#/$defs/identifier'}
+      object_type: {$ref: '#/$defs/identifier'}
+      state_owner: {$ref: '#/$defs/identifier'}
+      effect: {$ref: '#/$defs/identifier'}
+      authority: {$ref: '#/$defs/identifier'}
+      phase: {$ref: '#/$defs/identifier'}
+      relation: {$ref: '#/$defs/identifier'}
+type: object
+additionalProperties: false
+required: [schema_version, namespace, responsibility, exclusions, owned_state, allowed_relations, variants, entity_scope, decision_scope]
+properties:
+  schema_version: {type: string}
+  namespace: {type: string, pattern: '^[A-Z][A-Z0-9]{1,7}$'}
+  responsibility: {type: string, minLength: 1}
+  exclusions:
+    type: array
+    uniqueItems: true
+    items: {$ref: '#/$defs/identifier'}
+  owned_state:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items: {$ref: '#/$defs/identifier'}
+  allowed_relations:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items: {$ref: '#/$defs/identifier'}
+  variants:
+    type: object
+    minProperties: 1
+    propertyNames: {pattern: '^[A-Z][A-Z0-9_]*$'}
+    additionalProperties: {$ref: '#/$defs/claim'}
+  entity_scope:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items: {$ref: '#/$defs/identifier'}
+  decision_scope:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items: {$ref: '#/$defs/identifier'}

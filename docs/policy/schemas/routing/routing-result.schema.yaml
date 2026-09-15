@@ -1,0 +1,41 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/routing/routing-result
+type: object
+additionalProperties: false
+required: [schema_version, outcome, reason_codes, provenance, integrity]
+properties:
+  schema_version: {const: '1.0'}
+  outcome:
+    type: string
+    enum: [ROUTED, SPLIT_REQUIRED, REVIEW_REQUIRED, BLOCKED]
+  reason_codes:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items: {type: string, pattern: '^[A-Z][A-Z0-9_]*$'}
+  namespaces:
+    type: array
+    uniqueItems: true
+    items: {type: string, pattern: '^[A-Z][A-Z0-9]{1,7}$'}
+  primary_namespace:
+    oneOf:
+      - {type: string, pattern: '^[A-Z][A-Z0-9]{1,7}$'}
+      - {type: 'null'}
+  authority_resolution:
+    type: object
+  provenance:
+    type: object
+    additionalProperties: false
+    required: [machine_verified, ai_assist_used]
+    properties:
+      machine_verified: {type: boolean}
+      ai_assist_used: {type: boolean}
+      classifier_improvement_candidate: {type: boolean}
+  integrity:
+    type: object
+    additionalProperties: false
+    required: [compiled_registry_verified, semantic_lock_verified]
+    properties:
+      compiled_registry_verified: {type: boolean}
+      semantic_lock_verified: {type: boolean}
+      semantic_sha256: {type: string, pattern: '^[0-9a-f]{64}$'}

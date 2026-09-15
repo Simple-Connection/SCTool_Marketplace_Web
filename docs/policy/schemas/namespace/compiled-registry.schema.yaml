@@ -1,0 +1,64 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/namespace/compiled-registry
+type: object
+additionalProperties: false
+required: [schema_version, generated, do_not_edit, source, semantic_sha256, claim_fields, namespace_contract, vocabulary, boundary_terms, namespaces, cross_namespace_edges, variants, tuple_index]
+properties:
+  schema_version: {const: '1.0'}
+  generated: {const: true}
+  do_not_edit: {const: true}
+  source:
+    type: object
+    additionalProperties: false
+    required: [path, mode, schema_version, source_set_sha256]
+    properties:
+      path: {const: docs/policy/governance/namespace_rules.yaml}
+      mode: {const: MANIFEST_BOUND_SOURCE_SET}
+      schema_version: {type: string}
+      source_set_sha256: {type: string, pattern: '^[0-9a-f]{64}$'}
+  semantic_sha256: {type: string, pattern: '^[0-9a-f]{64}$'}
+  claim_fields:
+    type: array
+    minItems: 8
+    maxItems: 8
+    uniqueItems: true
+    items: {type: string}
+  namespace_contract: {type: object}
+  vocabulary: {type: object}
+  boundary_terms: {type: object}
+  namespaces:
+    type: object
+    minProperties: 1
+    additionalProperties:
+      type: object
+      required: [responsibility, entity_scope, decision_scope, owned_state, allowed_relations, exclusions, exclusion_rules, source, status, routable]
+      properties:
+        responsibility: {type: string}
+        entity_scope: {type: array}
+        decision_scope: {type: array}
+        owned_state: {type: array}
+        allowed_relations: {type: array}
+        exclusions: {type: array}
+        exclusion_rules: {type: array}
+        source: {type: string}
+        status: {type: string}
+        routable: {type: boolean}
+  cross_namespace_edges: {type: object}
+  variants:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      required: [namespace, namespace_status, variant_id, subject_type, operation, object_type, state_owner, effect, authority, phase, relation]
+  tuple_index:
+    type: object
+    minProperties: 1
+    propertyNames: {pattern: '^[0-9a-f]{64}$'}
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [namespace, variant_id, namespace_status]
+      properties:
+        namespace: {type: string}
+        variant_id: {type: string}
+        namespace_status: {type: string}

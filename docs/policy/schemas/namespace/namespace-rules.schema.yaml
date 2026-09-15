@@ -1,0 +1,111 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/namespace/namespace-rules
+$defs:
+  namespaceCode:
+    type: string
+    pattern: '^[A-Z][A-Z0-9]{1,7}$'
+  identifier:
+    type: string
+    pattern: '^[a-z][a-z0-9_]*$'
+type: object
+additionalProperties: false
+required:
+  - schema_version
+  - authority_contract
+  - namespace_contract
+  - claim_fields
+  - vocabulary
+  - boundary_terms
+  - cross_namespace_edges
+  - namespace_sources
+properties:
+  schema_version: {type: string}
+  authority_contract:
+    type: object
+    additionalProperties: false
+    required: [single_source_of_truth, compiled_registry, semantic_lock, generated_artifact_editable, classifier, runtime_semantics, runtime_source_rebuild]
+    properties:
+      single_source_of_truth: {type: string}
+      compiled_registry: {type: string}
+      semantic_lock: {type: string}
+      generated_artifact_editable: {const: false}
+      classifier: {type: string}
+      runtime_semantics: {const: COMPILED_REGISTRY_ONLY}
+      runtime_source_rebuild: {const: false}
+  namespace_contract:
+    type: object
+    additionalProperties: false
+    required: [extensible, minimum_count, code_pattern]
+    properties:
+      extensible: {const: true}
+      minimum_count: {type: integer, minimum: 1}
+      code_pattern: {type: string}
+  claim_fields:
+    type: array
+    minItems: 8
+    maxItems: 8
+    uniqueItems: true
+    items: {type: string}
+  vocabulary:
+    type: object
+    additionalProperties: false
+    required: [closed_fields, identifier_pattern]
+    properties:
+      closed_fields:
+        type: object
+        minProperties: 3
+        additionalProperties:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {$ref: '#/$defs/identifier'}
+      identifier_pattern: {type: string}
+  boundary_terms:
+    type: object
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [namespaces]
+      properties:
+        namespaces:
+          type: array
+          uniqueItems: true
+          items: {$ref: '#/$defs/namespaceCode'}
+        operations:
+          type: array
+          uniqueItems: true
+          items: {$ref: '#/$defs/identifier'}
+        effects:
+          type: array
+          uniqueItems: true
+          items: {$ref: '#/$defs/identifier'}
+  cross_namespace_edges:
+    type: object
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [ownership_transfer, description, allowed_from, allowed_to]
+      properties:
+        ownership_transfer: {const: false}
+        description: {type: string, minLength: 1}
+        allowed_from:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {type: string, pattern: '^(\*|[A-Z][A-Z0-9]{1,7})$'}
+        allowed_to:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {type: string, pattern: '^(\*|[A-Z][A-Z0-9]{1,7})$'}
+  namespace_sources:
+    type: object
+    minProperties: 1
+    propertyNames: {$ref: '#/$defs/namespaceCode'}
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [source, status]
+      properties:
+        source: {type: string, pattern: '^namespaces/[A-Z][A-Z0-9]{1,7}\.yaml$'}
+        status: {type: string, pattern: '^[A-Z][A-Z0-9_]*$'}

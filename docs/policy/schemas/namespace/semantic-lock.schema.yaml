@@ -1,0 +1,17 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/namespace/semantic-lock
+type: object
+additionalProperties: false
+required: [schema_version, generated, do_not_edit, source, source_mode, source_schema_version, source_set_sha256, semantic_sha256, compiled_registry_sha256, namespace_count, variant_count]
+properties:
+  schema_version: {const: '1.0'}
+  generated: {const: true}
+  do_not_edit: {const: true}
+  source: {const: docs/policy/governance/namespace_rules.yaml}
+  source_mode: {const: MANIFEST_BOUND_SOURCE_SET}
+  source_schema_version: {type: string}
+  source_set_sha256: {type: string, pattern: '^[0-9a-f]{64}$'}
+  semantic_sha256: {type: string, pattern: '^[0-9a-f]{64}$'}
+  compiled_registry_sha256: {type: string, pattern: '^[0-9a-f]{64}$'}
+  namespace_count: {type: integer, minimum: 1}
+  variant_count: {type: integer, minimum: 1}

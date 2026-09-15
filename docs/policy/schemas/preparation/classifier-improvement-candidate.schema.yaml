@@ -1,0 +1,20 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/preparation/classifier-improvement-candidate
+type: object
+additionalProperties: false
+required: [schema_version, status, gap_class, proposed_action, evidence]
+properties:
+  schema_version: {const: '1.0'}
+  status: {const: PROPOSED}
+  gap_class: {enum: [NORMALIZATION_GAP, VARIANT_GAP, ONTOLOGY_GAP]}
+  proposed_action: {enum: [PROPOSE_DETERMINISTIC_NORMALIZATION_RULE, PROPOSE_NAMESPACE_VARIANT, REQUIRE_HUMAN_REVIEW]}
+  namespace: {type: string, pattern: '^[A-Z][A-Z0-9]{1,7}$'}
+  evidence:
+    type: object
+    required: [ai_assist_used, machine_recheck_passed]
+    properties:
+      ai_assist_used: {const: true}
+      machine_recheck_passed: {const: true}
+      input_fingerprint: {type: string}
+      matched_variant: {type: string}
+  proposal: {type: object}

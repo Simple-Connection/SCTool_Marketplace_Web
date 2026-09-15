@@ -1,0 +1,42 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/routing/routing-candidate
+$defs:
+  claim:
+    type: object
+    additionalProperties: false
+    properties:
+      subject_type: {type: string}
+      operation: {type: string}
+      object_type: {type: string}
+      state_owner: {type: string}
+      effect: {type: string}
+      authority: {type: string}
+      phase: {type: string}
+      relation: {type: string}
+  edge:
+    type: object
+    additionalProperties: false
+    required: [from, relation, to]
+    properties:
+      from: {type: string}
+      relation: {type: string}
+      to: {type: string}
+type: object
+additionalProperties: false
+required: [schema_version]
+anyOf:
+  - required: [claims]
+  - required: [source_text]
+properties:
+  schema_version: {const: '1.0'}
+  candidate_id: {type: string, minLength: 1}
+  source_text: {type: string, minLength: 1}
+  declared_namespace: {type: string, pattern: '^[A-Z][A-Z0-9]{1,7}$'}
+  claims:
+    type: array
+    minItems: 1
+    items: {$ref: '#/$defs/claim'}
+  edges:
+    type: array
+    items: {$ref: '#/$defs/edge'}
+  metadata: {type: object}

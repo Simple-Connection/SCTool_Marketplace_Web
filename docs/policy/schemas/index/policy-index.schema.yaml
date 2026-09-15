@@ -1,0 +1,48 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/index/policy-index
+type: object
+additionalProperties: false
+required: [schema_version, document_type, repository, authority, governance, namespace_projection]
+properties:
+  schema_version: {const: '2.0'}
+  document_type: {const: marketplace_policy_index}
+  repository: {const: Simple-Connection/SCTool_Marketplace_Web}
+  authority: {const: MARKETPLACE_WEB_POLICY}
+  governance:
+    type: object
+    additionalProperties: false
+    required: [namespace, routing, authority, schemas]
+    properties:
+      namespace:
+        type: object
+        additionalProperties: false
+        required: [source, source_mode, classifier, compiled_registry, semantic_lock, namespace_membership_path_and_status_owner]
+        properties:
+          source: {const: governance/namespace_rules.yaml}
+          source_mode: {const: MANIFEST_BOUND_SOURCE_SET}
+          classifier: {type: string}
+          compiled_registry: {type: string}
+          semantic_lock: {type: string}
+          namespace_membership_path_and_status_owner: {const: governance/namespace_rules.yaml}
+      routing:
+        type: object
+        additionalProperties: false
+        required: [policy]
+        properties: {policy: {const: governance/routing_policy.yaml}}
+      authority:
+        type: object
+        additionalProperties: false
+        required: [policy]
+        properties: {policy: {const: governance/authority_policy.yaml}}
+      schemas:
+        type: object
+        additionalProperties: false
+        required: [responsibility_policy]
+        properties: {responsibility_policy: {const: governance/schema_responsibility_policy.yaml}}
+  namespace_projection:
+    type: object
+    additionalProperties: false
+    required: [local_duplicate_mapping, source_of_truth]
+    properties:
+      local_duplicate_mapping: {const: FORBIDDEN}
+      source_of_truth: {const: governance/namespace_rules.yaml}

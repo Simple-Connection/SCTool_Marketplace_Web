@@ -1,0 +1,30 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/authority/authority-contract
+type: object
+additionalProperties: false
+required: [schema_version, document_type, status, approved_on, model, separation_rules, execution_boundaries, namespace_authorities, gateway_boundary, routing_actors, legacy_claim_authority]
+properties:
+  schema_version: {const: '1.0'}
+  document_type: {const: marketplace_authority_policy}
+  status: {type: string}
+  approved_on: {type: string}
+  model: {type: object}
+  separation_rules: {type: object}
+  execution_boundaries:
+    type: object
+    required: [REGISTRY, GATEWAY, WEB]
+  namespace_authorities:
+    type: object
+    minProperties: 1
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [decision_authority, execution_boundary, repository_owner, ownership_scope]
+      properties:
+        decision_authority: {type: string, pattern: '^[A-Z][A-Z0-9_]*$'}
+        execution_boundary: {enum: [REGISTRY, GATEWAY, WEB]}
+        repository_owner: {type: string, pattern: '^Simple-Connection/.+$'}
+        ownership_scope: {type: string, minLength: 1}
+  gateway_boundary: {type: object}
+  routing_actors: {type: object}
+  legacy_claim_authority: {type: object}

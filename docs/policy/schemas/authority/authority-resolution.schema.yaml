@@ -1,0 +1,12 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/authority/authority-resolution
+type: object
+additionalProperties: false
+required: [schema_version, namespace, decision_authority, execution_boundary, repository_owner]
+properties:
+  schema_version: {const: '1.0'}
+  namespace: {type: string, pattern: '^[A-Z][A-Z0-9]{1,7}$'}
+  decision_authority: {type: string, pattern: '^[A-Z][A-Z0-9_]*$'}
+  execution_boundary: {enum: [REGISTRY, GATEWAY, WEB]}
+  repository_owner: {type: string, pattern: '^Simple-Connection/.+$'}
+  evidence: {type: object}

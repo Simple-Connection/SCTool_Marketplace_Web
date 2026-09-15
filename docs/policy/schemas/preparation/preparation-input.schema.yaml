@@ -1,0 +1,14 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/preparation/preparation-input
+type: object
+additionalProperties: false
+required: [schema_version]
+anyOf:
+  - required: [source_text]
+  - required: [claims]
+properties:
+  schema_version: {const: '1.0'}
+  source_text: {type: string, minLength: 1}
+  claims: {type: array, minItems: 1, items: {type: object}}
+  declared_namespace: {type: string}
+  metadata: {type: object}
