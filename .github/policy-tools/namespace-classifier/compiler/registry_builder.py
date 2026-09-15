@@ -4,17 +4,17 @@ from validator import validate
 
 def build_registry(source_path=SOURCE):
     data,source_sha=load_source(source_path); variants,boundaries=validate(data)
-    semantic={
-        "claim_fields":FIELDS,
-        "namespaces":boundaries,
-        "cross_namespace_edges":data.get("cross_namespace_edges",{}),
-        "variants":variants,
-    }
-    sem_sha=hashlib.sha256(canonical(semantic).encode()).hexdigest()
     tuple_index={}
     for v in variants:
         key=hashlib.sha256(canonical([v[f] for f in FIELDS]).encode()).hexdigest()
         tuple_index[key]={"namespace":v["namespace"],"variant_id":v["variant_id"],"namespace_status":v["namespace_status"]}
+    semantic={
+        "claim_fields":FIELDS,
+        "namespaces":boundaries,
+        "cross_namespace_edges":data.get("cross_namespace_edges",{}),
+        "tuple_index":tuple_index,
+    }
+    sem_sha=hashlib.sha256(canonical(semantic).encode()).hexdigest()
     return {
         "schema_version":"1.0",
         "generated":True,
@@ -26,14 +26,7 @@ def build_registry(source_path=SOURCE):
             "source_set_sha256":source_sha,
         },
         "semantic_sha256":sem_sha,
-        "claim_fields":FIELDS,
-        "namespace_contract":data.get("namespace_contract",{}),
-        "vocabulary":data.get("vocabulary",{}),
-        "boundary_terms":data.get("boundary_terms",{}),
-        "namespaces":boundaries,
-        "cross_namespace_edges":data.get("cross_namespace_edges",{}),
-        "variants":variants,
-        "tuple_index":tuple_index,
+        **semantic,
     }
 
 def render_registry(reg):
@@ -54,7 +47,7 @@ def lock_from_registry(reg):
         "semantic_sha256":reg["semantic_sha256"],
         "compiled_registry_sha256":registry_sha256(reg),
         "namespace_count":len(reg["namespaces"]),
-        "variant_count":len(reg["variants"]),
+        "variant_count":len(reg["tuple_index"]),
     }
 
 def render_lock(lock):

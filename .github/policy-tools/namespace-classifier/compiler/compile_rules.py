@@ -14,20 +14,15 @@ def write_outputs():
     return reg
 
 def verify_outputs():
-    if not REGISTRY.exists():
-        return False,"compiled registry missing"
-    if not LOCK.exists():
-        return False,"compiled registry lock missing"
+    if not REGISTRY.exists(): return False,"compiled registry missing"
+    if not LOCK.exists(): return False,"compiled registry lock missing"
     _,registry_text,lock_text=render_outputs()
-    if REGISTRY.read_text(encoding="utf-8")!=registry_text:
-        return False,"compiled registry drift detected"
-    if LOCK.read_text(encoding="utf-8")!=lock_text:
-        return False,"compiled registry lock drift detected"
+    if REGISTRY.read_text(encoding="utf-8")!=registry_text: return False,"compiled registry drift detected"
+    if LOCK.read_text(encoding="utf-8")!=lock_text: return False,"compiled registry lock drift detected"
     return True,"compiled registry and lock match authority source set"
 
 if __name__=="__main__":
     p=argparse.ArgumentParser(); p.add_argument("--check",action="store_true"); a=p.parse_args()
     if a.check:
         ok,msg=verify_outputs(); print(msg); raise SystemExit(0 if ok else 1)
-    reg=write_outputs()
-    print(f"compiled {len(reg['namespaces'])} namespaces / {len(reg['variants'])} variants")
+    reg=write_outputs(); print(f"compiled {len(reg['namespaces'])} namespaces / {len(reg['tuple_index'])} variants")

@@ -1,11 +1,13 @@
 {
+  "compiled_registry_sha256": "cc2696b147ec6930518bd6c16b94366d745a441c1626b746cb44186942c2eafc",
   "do_not_edit": true,
   "generated": true,
   "namespace_count": 10,
-  "semantic_sha256": "e31c0e2d61e57e9cfc236f5776381a683976f11c45239c0df423077b97d17d23",
+  "schema_version": "1.0",
+  "semantic_sha256": "e625481edbf41881f9ed594117a84d51df6745f170fd210c877fa6e6233f3670",
   "source": "docs/policy/governance/namespace_rules.yaml",
   "source_mode": "MANIFEST_BOUND_SOURCE_SET",
-  "source_schema_version": "7.2.0",
-  "source_set_sha256": "7257e1d87633ba2290737371d6c2baac126063c9c1d5c3432fbb98f77f604676",
+  "source_schema_version": "7.3.0",
+  "source_set_sha256": "b96738a7af9b17b5c96ed0f21b6d578518563b2bce918888988950fbee30e6d9",
   "variant_count": 34
 }

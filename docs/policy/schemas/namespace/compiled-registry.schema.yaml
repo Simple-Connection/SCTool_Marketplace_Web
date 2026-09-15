@@ -2,7 +2,7 @@ $schema: https://json-schema.org/draft/2020-12/schema
 $id: marketplace://schemas/namespace/compiled-registry
 type: object
 additionalProperties: false
-required: [schema_version, generated, do_not_edit, source, semantic_sha256, claim_fields, namespace_contract, vocabulary, boundary_terms, namespaces, cross_namespace_edges, variants, tuple_index]
+required: [schema_version, generated, do_not_edit, source, semantic_sha256, claim_fields, namespaces, cross_namespace_edges, tuple_index]
 properties:
   schema_version: {const: '1.0'}
   generated: {const: true}
@@ -23,9 +23,6 @@ properties:
     maxItems: 8
     uniqueItems: true
     items: {type: string}
-  namespace_contract: {type: object}
-  vocabulary: {type: object}
-  boundary_terms: {type: object}
   namespaces:
     type: object
     minProperties: 1
@@ -44,12 +41,6 @@ properties:
         status: {type: string}
         routable: {type: boolean}
   cross_namespace_edges: {type: object}
-  variants:
-    type: array
-    minItems: 1
-    items:
-      type: object
-      required: [namespace, namespace_status, variant_id, subject_type, operation, object_type, state_owner, effect, authority, phase, relation]
   tuple_index:
     type: object
     minProperties: 1

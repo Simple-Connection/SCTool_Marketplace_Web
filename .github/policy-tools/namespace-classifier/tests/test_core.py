@@ -1,10 +1,11 @@
-import copy,sys,tempfile
+import copy,shutil,sys,tempfile
 from pathlib import Path
 import yaml
 ROOT=Path(__file__).resolve().parents[1]; REPO=ROOT.parents[2]
 sys.path.insert(0,str(ROOT/"compiler")); sys.path.insert(0,str(ROOT/"engine"))
-from registry_builder import build_registry
+from registry_builder import build_registry,lock_from_registry,render_lock,render_registry
 from source_loader import load_source
+from lock_verifier import load_verified_registry
 import classifier
 
 def eq(a,b,label):
@@ -27,16 +28,32 @@ def test_edges():
     eq(classifier.validate_edge({"from":"UIX","relation":"projects_from","to":"TAX"})["status"],"VALID","edge")
     eq(classifier.validate_edge({"from":"TAX","relation":"projects_from","to":"UIX"})["status"],"INVALID_EDGE","edge direction")
 
+def test_runtime_uses_verified_compiled_registry():
+    reg=load_verified_registry(); eq(reg["generated"],True,"generated"); eq(len(reg["namespaces"]),10,"namespace count"); eq(len(reg["tuple_index"]),34,"tuple count")
+
+def test_lock_detects_stale_source():
+    source=REPO/"docs/policy/governance/namespace_rules.yaml"
+    with tempfile.TemporaryDirectory() as td:
+        td=Path(td); gov=td/"governance"; shutil.copytree(source.parent,gov)
+        generated=td/"generated"; generated.mkdir(); temp_source=gov/"namespace_rules.yaml"
+        reg=build_registry(temp_source); registry_path=generated/"compiled_registry.json"; lock_path=generated/"compiled_registry.lock.json"
+        registry_path.write_text(render_registry(reg),encoding="utf-8"); lock_path.write_text(render_lock(lock_from_registry(reg)),encoding="utf-8")
+        load_verified_registry(temp_source,registry_path,lock_path)
+        cat=gov/"namespaces/CAT.yaml"; cat.write_text(cat.read_text(encoding="utf-8")+"\n# stale\n",encoding="utf-8")
+        try: load_verified_registry(temp_source,registry_path,lock_path)
+        except RuntimeError as exc: eq(str(exc),"SOURCE_LOCK_STALE","stale source")
+        else: raise AssertionError("stale source accepted")
+
 def test_extensible_and_vocab():
     source=REPO/"docs/policy/governance/namespace_rules.yaml"; data,_=load_source(source)
     ext=copy.deepcopy(data); ext["namespaces"]["MOD"]={"responsibility":"Moderation","entity_scope":["record"],"decision_scope":["decision"],"exclusions":[],"owned_state":["moderation"],"allowed_relations":["owns"],"variants":{"MOD_DECIDE":{"subject_type":"moderator","operation":"decide_moderation","object_type":"record","state_owner":"moderation","effect":"decision","authority":"registry","phase":"registered","relation":"owns"}}}
     with tempfile.TemporaryDirectory() as td:
         td=Path(td); gov=td/"governance"; (gov/"namespaces").mkdir(parents=True)
-        manifest=yaml.safe_load(source.read_text()); manifest["namespace_sources"]["MOD"]="namespaces/MOD.yaml"
+        manifest=yaml.safe_load(source.read_text()); manifest["namespace_sources"]["MOD"]={"source":"namespaces/MOD.yaml","status":"ACTIVE"}
         (gov/"namespace_rules.yaml").write_text(yaml.safe_dump(manifest,sort_keys=False))
         for code,body in ext["namespaces"].items():
             (gov/f"namespaces/{code}.yaml").write_text(yaml.safe_dump({"schema_version":"1.0","namespace":code,**body},sort_keys=False))
-        eq(len(build_registry(gov/"namespace_rules.yaml")["namespace_boundaries"]),11,"extensible")
+        eq(len(build_registry(gov/"namespace_rules.yaml")["namespaces"]),11,"extensible")
         bad=yaml.safe_load((gov/"namespaces/CAT.yaml").read_text()); bad["variants"]["CAT_VISIBILITY"]["authority"]="regsitry"; (gov/"namespaces/CAT.yaml").write_text(yaml.safe_dump(bad,sort_keys=False))
         try: build_registry(gov/"namespace_rules.yaml")
         except SystemExit as exc:
