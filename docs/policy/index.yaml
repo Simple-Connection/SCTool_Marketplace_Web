@@ -8,6 +8,7 @@ governance:
     source: governance/namespace_rules.yaml
     source_mode: MANIFEST_BOUND_SOURCE_SET
     classifier: ../../.github/policy-tools/namespace-classifier/engine/classifier.py
+    compiled_registry: ../../.github/policy-tools/namespace-classifier/generated/compiled_registry.json
     semantic_lock: ../../.github/policy-tools/namespace-classifier/generated/compiled_registry.lock.json
     namespace_membership_path_and_status_owner: governance/namespace_rules.yaml
   routing:
