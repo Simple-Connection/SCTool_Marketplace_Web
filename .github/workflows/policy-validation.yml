@@ -3,7 +3,7 @@ on:
   pull_request:
     paths: ["docs/policy/**", ".github/policy-tools/**", ".github/workflows/policy-validation.yml"]
   push:
-    branches: [main]
+    branches: [main, "policy/**"]
     paths: ["docs/policy/**", ".github/policy-tools/**", ".github/workflows/policy-validation.yml"]
   workflow_dispatch:
 permissions:
