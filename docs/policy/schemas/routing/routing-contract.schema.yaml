@@ -2,7 +2,7 @@ $schema: https://json-schema.org/draft/2020-12/schema
 $id: marketplace://schemas/routing/routing-contract
 type: object
 additionalProperties: false
-required: [schema_version, document_type, status, approved_on, scope, principles, pipeline, ai_policy, classifier_improvement, compiled_registry, outcomes, reason_code_policy, namespace_source_ownership, schema_responsibility_policy, authority_policy]
+required: [schema_version, document_type, status, approved_on, scope, principles, implementation, pipeline, ai_policy, classifier_improvement, compiled_registry, outcomes, reason_code_policy, namespace_source_ownership, schema_responsibility_policy, authority_policy]
 properties:
   schema_version: {const: '1.0'}
   document_type: {const: marketplace_routing_policy}
@@ -10,6 +10,7 @@ properties:
   approved_on: {type: string}
   scope: {type: array, minItems: 1, uniqueItems: true}
   principles: {type: object}
+  implementation: {type: object}
   pipeline: {type: array, minItems: 1}
   ai_policy: {type: object}
   classifier_improvement: {type: object}

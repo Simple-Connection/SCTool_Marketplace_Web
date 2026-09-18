@@ -19,3 +19,4 @@ jobs:
       - run: python .github/policy-tools/policy-schema-validator.py
       - run: python .github/policy-tools/namespace-classifier/compiler/compile_rules.py --check
       - run: python .github/policy-tools/namespace-classifier/tests/test_core.py
+      - run: python .github/policy-tools/policy-router/tests/test_router.py

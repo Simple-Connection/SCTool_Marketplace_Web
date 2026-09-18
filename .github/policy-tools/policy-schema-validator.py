@@ -30,6 +30,7 @@ def run():
     validate(REPO/"docs/policy/index.yaml","index/policy-index.schema.yaml")
     validate(REPO/"docs/policy/governance/routing_policy.yaml","routing/routing-contract.schema.yaml")
     validate(REPO/"docs/policy/governance/authority_policy.yaml","authority/authority-contract.schema.yaml")
+    validate(REPO/"docs/policy/governance/normalization_rules.yaml","preparation/normalization-rules.schema.yaml")
     rules_path=REPO/"docs/policy/governance/namespace_rules.yaml"
     validate(rules_path,"namespace/namespace-rules.schema.yaml")
     rules=load_yaml(rules_path)

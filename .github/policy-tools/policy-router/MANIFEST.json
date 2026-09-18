@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "entrypoint": ".github/policy-tools/policy-router/router.py",
+  "policy": "docs/policy/governance/routing_policy.yaml",
+  "normalization_rules": "docs/policy/governance/normalization_rules.yaml",
+  "components": {
+    "preparation": "preparation.py",
+    "normalizer": "normalizer.py",
+    "ai_eligibility": "ai_eligibility.py",
+    "ai_assist": "ai_assist.py",
+    "improvement": "improvement.py",
+    "authority_resolver": "authority_resolver.py",
+    "router": "router.py"
+  },
+  "ai_provider_contract": {
+    "default": "NONE",
+    "environment_command": "POLICY_ROUTER_AI_COMMAND",
+    "command_protocol": "JSON_STDIN_JSON_STDOUT",
+    "shell": false,
+    "final_namespace_decision": "FORBIDDEN",
+    "machine_recheck": "REQUIRED"
+  },
+  "outcomes": {
+    "initial": ["ROUTED", "SPLIT_REQUIRED", "REVIEW_REQUIRED", "BLOCKED"],
+    "extensible": true
+  },
+  "tests": ".github/policy-tools/policy-router/tests/test_router.py"
+}
