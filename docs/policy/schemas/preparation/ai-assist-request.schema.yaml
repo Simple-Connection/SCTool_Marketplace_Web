@@ -1,0 +1,19 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/preparation/ai-assist-request
+type: object
+additionalProperties: false
+required: [schema_version, candidate, machine_result, eligibility, constraints]
+properties:
+  schema_version: {const: '1.0'}
+  candidate: {type: object}
+  machine_result: {type: object}
+  eligibility: {type: object}
+  constraints:
+    type: object
+    additionalProperties: false
+    required: [final_namespace_decision, create_namespace, create_variant, bypass_machine_recheck]
+    properties:
+      final_namespace_decision: {const: FORBIDDEN}
+      create_namespace: {const: FORBIDDEN}
+      create_variant: {const: FORBIDDEN}
+      bypass_machine_recheck: {const: FORBIDDEN}

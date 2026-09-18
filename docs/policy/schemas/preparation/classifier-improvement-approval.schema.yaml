@@ -1,0 +1,11 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/preparation/classifier-improvement-approval
+type: object
+additionalProperties: false
+required: [schema_version, candidate_id, authority, decision]
+properties:
+  schema_version: {const: '1.0'}
+  candidate_id: {type: string, pattern: '^IMP-[0-9a-f]{16}$'}
+  authority: {const: USER}
+  decision: {const: APPROVE}
+  approved_on: {type: string}

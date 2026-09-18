@@ -2,19 +2,21 @@ $schema: https://json-schema.org/draft/2020-12/schema
 $id: marketplace://schemas/preparation/classifier-improvement-candidate
 type: object
 additionalProperties: false
-required: [schema_version, status, gap_class, proposed_action, evidence]
+required: [schema_version, candidate_id, status, gap_class, proposed_action, evidence, proposal]
 properties:
   schema_version: {const: '1.0'}
+  candidate_id: {type: string, pattern: '^IMP-[0-9a-f]{16}$'}
   status: {const: PROPOSED}
-  gap_class: {enum: [NORMALIZATION_GAP, VARIANT_GAP, ONTOLOGY_GAP]}
-  proposed_action: {enum: [PROPOSE_DETERMINISTIC_NORMALIZATION_RULE, PROPOSE_NAMESPACE_VARIANT, REQUIRE_HUMAN_REVIEW]}
+  gap_class: {enum: [NORMALIZATION_GAP, CLAIM_COMPLETION_GAP, VARIANT_GAP, ONTOLOGY_GAP]}
+  proposed_action: {enum: [PROPOSE_DETERMINISTIC_NORMALIZATION_RULE, PROPOSE_PREPARATION_RULE, PROPOSE_NAMESPACE_VARIANT, REQUIRE_HUMAN_REVIEW]}
   namespace: {type: string, pattern: '^[A-Z][A-Z0-9]{1,7}$'}
   evidence:
     type: object
-    required: [ai_assist_used, machine_recheck_passed]
+    additionalProperties: false
+    required: [ai_assist_used, machine_recheck_passed, input_fingerprint]
     properties:
       ai_assist_used: {const: true}
       machine_recheck_passed: {const: true}
-      input_fingerprint: {type: string}
+      input_fingerprint: {type: string, pattern: '^[0-9a-f]{64}$'}
       matched_variant: {type: string}
   proposal: {type: object}

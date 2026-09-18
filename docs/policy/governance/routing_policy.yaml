@@ -23,6 +23,16 @@ principles:
   runtime_policy_self_mutation: FORBIDDEN
   route_is_logical_not_filesystem_placement: true
 
+implementation:
+  router_entrypoint: .github/policy-tools/policy-router/router.py
+  normalization_rules: docs/policy/governance/normalization_rules.yaml
+  ai_provider:
+    integration: EXTERNAL_COMMAND_OR_INJECTED_CALLABLE
+    repository_embedded_secret: FORBIDDEN
+    default_state: DISABLED
+    unavailable_action: REVIEW_REQUIRED
+    provider_output_must_match_schema: docs/policy/schemas/preparation/ai-assist-response.schema.yaml
+
 pipeline:
   - stage: INTAKE
     responsibility: Validate candidate structure before semantic routing.
@@ -50,16 +60,8 @@ ai_policy:
     ai_direct_final_route_share: "0%"
     machine_verified_final_route_share: "100%"
   eligibility_is_state_based: true
-  eligible_reason_classes:
-    - NORMALIZATION_GAP
-    - CLAIM_COMPLETION_GAP
-    - SEMANTIC_SPLIT_PROPOSAL
-  non_eligible_reason_classes:
-    - INTEGRITY_FAILURE
-    - BOUNDARY_VIOLATION
-    - DECLARED_NAMESPACE_MISMATCH
-    - INVALID_EDGE
-    - UNKNOWN_DECLARED_NAMESPACE
+  eligible_reason_classes: [NORMALIZATION_GAP, CLAIM_COMPLETION_GAP, SEMANTIC_SPLIT_PROPOSAL]
+  non_eligible_reason_classes: [INTEGRITY_FAILURE, BOUNDARY_VIOLATION, DECLARED_NAMESPACE_MISMATCH, INVALID_EDGE, UNKNOWN_DECLARED_NAMESPACE]
   output_contract:
     may_propose_claims: true
     may_propose_split: true
@@ -74,6 +76,9 @@ classifier_improvement:
     NORMALIZATION_GAP:
       action: PROPOSE_DETERMINISTIC_NORMALIZATION_RULE
       semantic_authority_change: false
+    CLAIM_COMPLETION_GAP:
+      action: PROPOSE_PREPARATION_RULE
+      semantic_authority_change: false
     VARIANT_GAP:
       action: PROPOSE_NAMESPACE_VARIANT
       semantic_authority_change: true
@@ -81,12 +86,11 @@ classifier_improvement:
       action: REQUIRE_HUMAN_REVIEW
       semantic_authority_change: true
   automatic_authority_source_edit: FORBIDDEN
-  promotion_requirements:
-    - COMPILER_VALIDATION
-    - COLLISION_CHECK
-    - BOUNDARY_CHECK
-    - REGRESSION_TESTS
-    - SEMANTIC_LOCK_REFRESH
+  promotion:
+    approval_required: true
+    approval_authority: USER
+    directly_promotable_rule_types: [FIELD_ALIAS, CLAIM_COMPLETION]
+  promotion_requirements: [COMPILER_VALIDATION, COLLISION_CHECK, BOUNDARY_CHECK, REGRESSION_TESTS, SEMANTIC_LOCK_REFRESH]
   objective: Repeated equivalent inputs should move from AI-assisted routing to deterministic routing after an approved improvement is promoted.
 
 compiled_registry:
@@ -96,23 +100,15 @@ compiled_registry:
   lock_artifact: .github/policy-tools/namespace-classifier/generated/compiled_registry.lock.json
   runtime_source_of_semantics: COMPILED_REGISTRY_ONLY
   runtime_rebuild_from_authority_yaml: FORBIDDEN
-  startup_checks:
-    - LOCK_PRESENT
-    - COMPILED_REGISTRY_PRESENT
-    - COMPILED_REGISTRY_HASH_MATCH
-    - AUTHORITY_SOURCE_SET_HASH_MATCH
+  startup_checks: [LOCK_PRESENT, COMPILED_REGISTRY_PRESENT, COMPILED_REGISTRY_HASH_MATCH, AUTHORITY_SOURCE_SET_HASH_MATCH]
   stale_rule_behavior: BLOCK_ROUTING
 
 outcomes:
   initial:
-    ROUTED:
-      meaning: One machine-verified namespace and authority route is valid.
-    SPLIT_REQUIRED:
-      meaning: Multiple independent responsibilities must be separated rather than arbitrarily selecting one namespace.
-    REVIEW_REQUIRED:
-      meaning: A semantic, variant, ontology, or authority decision cannot be safely automated.
-    BLOCKED:
-      meaning: Integrity, schema, boundary, or other hard contract failure prevents routing.
+    ROUTED: {meaning: One machine-verified namespace and authority route is valid.}
+    SPLIT_REQUIRED: {meaning: Multiple independent responsibilities must be separated rather than arbitrarily selecting one namespace.}
+    REVIEW_REQUIRED: {meaning: A semantic, variant, ontology, or authority decision cannot be safely automated.}
+    BLOCKED: {meaning: Integrity, schema, boundary, or other hard contract failure prevents routing.}
   extensible: true
   extension_rule:
     - Do not create a new outcome when a reason code under an existing outcome is sufficient.
@@ -123,47 +119,19 @@ reason_code_policy:
   outcome_and_reason_are_separate: true
   categories:
     integrity:
-      examples:
-        - LOCK_MISSING
-        - SOURCE_LOCK_STALE
-        - COMPILED_REGISTRY_MISSING
-        - COMPILED_REGISTRY_HASH_MISMATCH
-        - INDEX_SCHEMA_INVALID
-        - INDEX_REGISTRY_MISMATCH
+      examples: [LOCK_MISSING, SOURCE_LOCK_STALE, COMPILED_REGISTRY_MISSING, COMPILED_REGISTRY_HASH_MISMATCH, INDEX_SCHEMA_INVALID, INDEX_REGISTRY_MISMATCH]
     input:
-      examples:
-        - INPUT_SCHEMA_INVALID
-        - CLAIMS_MISSING
-        - CLAIM_FIELDS_MISSING
-        - INVALID_CLAIM_FIELD
-        - INVALID_EDGE
+      examples: [INPUT_SCHEMA_INVALID, CLAIMS_MISSING, CLAIM_FIELDS_MISSING, INVALID_CLAIM_FIELD, INVALID_EDGE]
     classification:
-      examples:
-        - EXACT_MATCH
-        - NO_EXACT_MATCH
-        - MULTI_RESPONSIBILITY
-        - BOUNDARY_VIOLATION
-        - DECLARED_NAMESPACE_MISMATCH
-        - UNKNOWN_DECLARED_NAMESPACE
+      examples: [EXACT_MATCH, NO_EXACT_MATCH, MULTI_RESPONSIBILITY, BOUNDARY_VIOLATION, DECLARED_NAMESPACE_MISMATCH, UNKNOWN_DECLARED_NAMESPACE]
     ai:
-      examples:
-        - AI_ASSIST_USED
-        - AI_OUTPUT_SCHEMA_INVALID
-        - AI_EXACT_CONFIRMATION_FAILED
-        - AI_PROPOSED_SPLIT
+      examples: [AI_ASSIST_USED, AI_PROVIDER_UNAVAILABLE, AI_OUTPUT_SCHEMA_INVALID, AI_EXACT_CONFIRMATION_FAILED, AI_PROPOSED_SPLIT]
     ontology:
-      examples:
-        - ONTOLOGY_GAP
-        - NEW_VARIANT_REQUIRED
-        - NEW_NAMESPACE_REVIEW_REQUIRED
+      examples: [ONTOLOGY_GAP, NEW_VARIANT_REQUIRED, NEW_NAMESPACE_REVIEW_REQUIRED]
 
 namespace_source_ownership:
   owner: docs/policy/governance/namespace_rules.yaml
-  owns:
-    - NAMESPACE_MEMBERSHIP
-    - NAMESPACE_SOURCE_PATH
-    - NAMESPACE_STATUS
-    - NAMESPACE_LIFECYCLE_METADATA
+  owns: [NAMESPACE_MEMBERSHIP, NAMESPACE_SOURCE_PATH, NAMESPACE_STATUS, NAMESPACE_LIFECYCLE_METADATA]
   policy_index_must_not_duplicate_namespace_membership: true
   policy_index_must_not_duplicate_namespace_path_or_status: true
 

@@ -1,0 +1,69 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: marketplace://schemas/preparation/normalization-rules
+$defs:
+  identifier: {type: string, pattern: '^[a-z][a-z0-9_]*$'}
+  field:
+    enum: [subject_type, operation, object_type, state_owner, effect, authority, phase, relation]
+  ruleBase:
+    type: object
+    required: [id, type, status]
+    properties:
+      id: {type: string, pattern: '^NORM-[A-Z0-9][A-Z0-9_-]*$'}
+      type: {enum: [FIELD_ALIAS, CLAIM_COMPLETION]}
+      status: {enum: [ACTIVE, RETIRED]}
+type: object
+additionalProperties: false
+required: [schema_version, document_type, status, principles, supported_rule_types, rules]
+properties:
+  schema_version: {const: '1.0'}
+  document_type: {const: marketplace_normalization_rules}
+  status: {enum: [ACTIVE, RETIRED]}
+  principles:
+    type: object
+    additionalProperties: false
+    required: [explicit_rules_only, semantic_guessing, overwrite_existing_claim_value, promotion_requires_approval, promotion_authority]
+    properties:
+      explicit_rules_only: {const: true}
+      semantic_guessing: {const: FORBIDDEN}
+      overwrite_existing_claim_value: {const: FORBIDDEN}
+      promotion_requires_approval: {const: true}
+      promotion_authority: {const: USER}
+  supported_rule_types:
+    type: array
+    uniqueItems: true
+    items: {enum: [FIELD_ALIAS, CLAIM_COMPLETION]}
+  rules:
+    type: array
+    items:
+      oneOf:
+        - allOf:
+            - {$ref: '#/$defs/ruleBase'}
+            - type: object
+              additionalProperties: false
+              required: [id, type, status, field, from, to]
+              properties:
+                id: {type: string, pattern: '^NORM-[A-Z0-9][A-Z0-9_-]*$'}
+                type: {const: FIELD_ALIAS}
+                status: {enum: [ACTIVE, RETIRED]}
+                field: {$ref: '#/$defs/field'}
+                from: {type: string, minLength: 1}
+                to: {type: string, minLength: 1}
+        - allOf:
+            - {$ref: '#/$defs/ruleBase'}
+            - type: object
+              additionalProperties: false
+              required: [id, type, status, when, set]
+              properties:
+                id: {type: string, pattern: '^NORM-[A-Z0-9][A-Z0-9_-]*$'}
+                type: {const: CLAIM_COMPLETION}
+                status: {enum: [ACTIVE, RETIRED]}
+                when:
+                  type: object
+                  minProperties: 1
+                  propertyNames: {$ref: '#/$defs/field'}
+                  additionalProperties: {type: string, minLength: 1}
+                set:
+                  type: object
+                  minProperties: 1
+                  propertyNames: {$ref: '#/$defs/field'}
+                  additionalProperties: {type: string, minLength: 1}

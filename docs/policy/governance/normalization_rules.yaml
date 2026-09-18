@@ -1,0 +1,16 @@
+schema_version: "1.0"
+document_type: marketplace_normalization_rules
+status: ACTIVE
+
+principles:
+  explicit_rules_only: true
+  semantic_guessing: FORBIDDEN
+  overwrite_existing_claim_value: FORBIDDEN
+  promotion_requires_approval: true
+  promotion_authority: USER
+
+supported_rule_types:
+  - FIELD_ALIAS
+  - CLAIM_COMPLETION
+
+rules: []

@@ -11,7 +11,7 @@ properties:
   governance:
     type: object
     additionalProperties: false
-    required: [namespace, routing, authority, schemas]
+    required: [namespace, routing, preparation, authority, schemas]
     properties:
       namespace:
         type: object
@@ -27,8 +27,16 @@ properties:
       routing:
         type: object
         additionalProperties: false
-        required: [policy]
-        properties: {policy: {const: governance/routing_policy.yaml}}
+        required: [policy, engine]
+        properties:
+          policy: {const: governance/routing_policy.yaml}
+          engine: {type: string}
+      preparation:
+        type: object
+        additionalProperties: false
+        required: [normalization_rules]
+        properties:
+          normalization_rules: {const: governance/normalization_rules.yaml}
       authority:
         type: object
         additionalProperties: false

@@ -5,9 +5,10 @@ additionalProperties: false
 required: [schema_version, outcome, reason_codes, provenance, integrity]
 properties:
   schema_version: {const: '1.0'}
+  candidate_id: {type: string}
   outcome:
     type: string
-    enum: [ROUTED, SPLIT_REQUIRED, REVIEW_REQUIRED, BLOCKED]
+    pattern: '^[A-Z][A-Z0-9_]*$'
   reason_codes:
     type: array
     minItems: 1
@@ -21,8 +22,9 @@ properties:
     oneOf:
       - {type: string, pattern: '^[A-Z][A-Z0-9]{1,7}$'}
       - {type: 'null'}
-  authority_resolution:
-    type: object
+  classification: {type: object}
+  authority_resolution: {type: object}
+  improvement_candidate: {type: object}
   provenance:
     type: object
     additionalProperties: false
@@ -30,7 +32,13 @@ properties:
     properties:
       machine_verified: {type: boolean}
       ai_assist_used: {type: boolean}
+      machine_recheck_performed: {type: boolean}
+      normalization_rule_ids:
+        type: array
+        uniqueItems: true
+        items: {type: string}
       classifier_improvement_candidate: {type: boolean}
+      ai_provider: {type: string}
   integrity:
     type: object
     additionalProperties: false

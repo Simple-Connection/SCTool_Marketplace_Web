@@ -13,6 +13,9 @@ governance:
     namespace_membership_path_and_status_owner: governance/namespace_rules.yaml
   routing:
     policy: governance/routing_policy.yaml
+    engine: ../../.github/policy-tools/policy-router/router.py
+  preparation:
+    normalization_rules: governance/normalization_rules.yaml
   authority:
     policy: governance/authority_policy.yaml
   schemas:
