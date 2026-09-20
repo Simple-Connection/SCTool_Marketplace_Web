@@ -5,13 +5,6 @@ const GLOBAL_NAVIGATION = [
 ];
 
 const LOCAL_NAVIGATION = {
-  download: {
-    label: "다운로드",
-    items: [
-      { key: "marketplace", label: "SCTool 도구", path: "marketplace/" },
-      { key: "simple-connection", label: "Simple Connection", path: "application/simple_connection/downloads/" }
-    ]
-  },
   settings: {
     label: "내설정",
     items: [

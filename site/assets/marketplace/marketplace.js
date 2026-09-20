@@ -1,7 +1,9 @@
 import { MarketplaceDataError, loadMarketplace } from "../registry-client.js";
 import { initializeShell } from "../shared/shell.js";
+import { initializeMarketplaceDrawer } from "./drawer.js";
 
 const { searchInput } = initializeShell();
+initializeMarketplaceDrawer();
 const toolGrid = document.querySelector("#tool-grid");
 const emptyState = document.querySelector("#empty-state");
 const emptyTitle = document.querySelector("#empty-title");

@@ -10,10 +10,37 @@
   <link rel="stylesheet" href="../assets/marketplace/marketplace.css" />
   <script type="module" src="../assets/marketplace/marketplace.js"></script>
 </head>
-<body data-section="download" data-subnav="marketplace">
+<body data-section="download">
   <div data-global-shell></div>
-  <div class="shell app-layout">
-    <aside class="local-nav" data-local-nav></aside>
+  <button
+    type="button"
+    class="marketplace-drawer-toggle"
+    data-marketplace-drawer-toggle
+    aria-controls="marketplace-drawer"
+    aria-expanded="false"
+  >
+    분야
+  </button>
+  <button
+    type="button"
+    class="marketplace-drawer-backdrop"
+    data-marketplace-drawer-backdrop
+    aria-label="Marketplace 분야 메뉴 닫기"
+    hidden
+  ></button>
+
+  <div class="shell marketplace-layout">
+    <aside id="marketplace-drawer" class="marketplace-drawer" aria-label="SCTool Marketplace 분야">
+      <div class="marketplace-drawer-head">
+        <div>
+          <p class="marketplace-drawer-kicker">SCTOOL MARKETPLACE</p>
+          <strong>분야</strong>
+        </div>
+        <button type="button" class="marketplace-drawer-close" data-marketplace-drawer-close aria-label="분야 메뉴 닫기">×</button>
+      </div>
+      <nav class="marketplace-category-nav" aria-label="Marketplace 카테고리" data-marketplace-categories></nav>
+    </aside>
+
     <main id="main-content" class="page-content">
       <section class="marketplace-hero">
         <p class="page-kicker">SCTOOL MARKETPLACE</p>

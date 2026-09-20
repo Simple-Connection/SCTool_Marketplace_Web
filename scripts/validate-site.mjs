@@ -16,6 +16,7 @@ const required = [
   "site/assets/dashboard/categories.js",
   "site/assets/dashboard/dashboard.css",
   "site/assets/marketplace/marketplace.js",
+  "site/assets/marketplace/drawer.js",
   "site/assets/marketplace/marketplace.css",
   "site/assets/registry-client.js",
   "site/assets/application/simple-connection/release-catalog-client.js",
@@ -47,7 +48,8 @@ const [
   navigation,
   account,
   dashboard,
-  dashboardCategories
+  dashboardCategories,
+  marketplaceDrawer
 ] = await Promise.all([
   readFile("site/index.html", "utf8"),
   readFile("site/marketplace/index.html", "utf8"),
@@ -61,7 +63,8 @@ const [
   readFile("site/assets/shared/navigation.js", "utf8"),
   readFile("site/assets/shared/account.js", "utf8"),
   readFile("site/assets/dashboard/dashboard.js", "utf8"),
-  readFile("site/assets/dashboard/categories.js", "utf8")
+  readFile("site/assets/dashboard/categories.js", "utf8"),
+  readFile("site/assets/marketplace/drawer.js", "utf8")
 ]);
 
 const failures = [];
@@ -87,6 +90,17 @@ require(dashboard.includes("buildDashboardCategories"), "Dashboard must render t
 require(dashboardCategories.includes("DASHBOARD_CATEGORY_LIMIT = 10"), "Dashboard categories must be capped at ten SCTools.");
 require(!dashboardCategories.includes("toLocaleLowerCase"), "Dashboard category projection must not infer semantic categories from free text.");
 require(marketplaceHtml.includes("assets/marketplace/marketplace.js"), "Marketplace must load marketplace.js.");
+require(marketplaceHtml.includes('id="marketplace-drawer"'), "Marketplace must own its dedicated Drawer.");
+require(marketplaceHtml.includes("data-marketplace-categories"), "Marketplace Drawer must expose the category mount.");
+require(!marketplaceHtml.includes("data-local-nav"), "Marketplace must not use the shared local navigation.");
+require(!downloadsHtml.includes("data-local-nav"), "Simple Connection downloads must not use the shared local navigation.");
+require(downloadsHtml.includes("app-layout-wide"), "Simple Connection downloads must use an independent wide layout.");
+require(settingsHtml.includes("data-local-nav"), "Settings must retain its shared local navigation.");
+require(marketplace.includes('from "./drawer.js"'), "Marketplace must initialize its dedicated Drawer.");
+require(marketplaceDrawer.includes('label: "번역"'), "Marketplace Drawer must expose the approved 번역 category.");
+require(marketplaceDrawer.includes('label: "문서"'), "Marketplace Drawer must expose the approved 문서 category.");
+require(!marketplaceDrawer.includes("filter("), "Marketplace Drawer must not infer or filter Registry categories before TAX is defined.");
+require(!marketplaceDrawer.includes("details"), "Marketplace Drawer must not classify tools from Marketplace profile free text.");
 require(
   downloadsHtml.includes("assets/application/simple-connection/downloads.js"),
   "Simple Connection downloads must load downloads.js."
@@ -97,7 +111,9 @@ require(shell.includes("initializeGlobalSearch"), "Application Shell must own th
 require(navigation.includes('label: "대시보드"'), "GNB must expose Dashboard.");
 require(navigation.includes('label: "다운로드"'), "GNB must expose Downloads.");
 require(navigation.includes('label: "내설정"'), "GNB must expose Settings.");
-require(navigation.includes("application/simple_connection/downloads/"), "Download navigation must expose Simple Connection.");
+require(!navigation.includes('label: "SCTool 도구"'), "Shared navigation must not own a Marketplace download LNB.");
+require(!navigation.includes('label: "Simple Connection"'), "Shared navigation must not own a Simple Connection download LNB.");
+require(!navigation.includes("application/simple_connection/downloads/"), "Simple Connection must not be represented through the shared download LNB.");
 require(account.includes('authState = "unconfigured"'), "GitHub account slot must remain explicitly unconfigured.");
 
 require(
