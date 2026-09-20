@@ -156,8 +156,22 @@ for (const marker of [
 const siteRoot = readArg("--site-root");
 if (siteRoot) {
   const root = resolve(siteRoot);
+  const requiredSitePaths = [
+    "index.html",
+    "marketplace/index.html",
+    "application/simple_connection/downloads/index.html",
+    "settings/index.html",
+    "settings/my-sctool/index.html",
+    "settings/preferences/index.html",
+    "assets/shared/shell.js",
+    "assets/shared/shell.css",
+    "assets/marketplace/marketplace.js",
+    "assets/registry-client.js",
+    "assets/application/simple-connection/release-catalog-client.js",
+    "assets/application/simple-connection/downloads.js",
+  ];
 
-  for (const path of ["index.html", "assets/app.js", "assets/registry-client.js", "assets/styles.css"]) {
+  for (const path of requiredSitePaths) {
     if (!(await exists(join(root, ...path.split("/"))))) {
       failures.push(`Assembled Pages artifact is missing ${path}`);
     }
