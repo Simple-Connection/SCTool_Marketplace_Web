@@ -136,6 +136,52 @@ a { color: inherit; }
   font-weight: 750;
 }
 .gnb-link.active { color: var(--text); border-bottom-color: var(--text); }
+.gnb-button {
+  padding: 0;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.gnb-button::after {
+  content: "⌄";
+  margin-left: 6px;
+  font-size: 12px;
+  transition: transform 140ms ease;
+}
+.gnb-button[aria-expanded="true"]::after { transform: rotate(180deg); }
+.download-local-navigation {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.download-local-navigation-inner {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.download-local-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 750;
+}
+.download-local-link:hover {
+  color: var(--text);
+  background: var(--surface-soft);
+}
+.download-local-link.active {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--surface-soft);
+}
 .app-layout {
   display: grid;
   grid-template-columns: 210px minmax(0, 1fr);

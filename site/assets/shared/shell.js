@@ -1,6 +1,7 @@
 import { renderAccountSlot } from "./account.js";
 import {
   applySiteLinks,
+  renderDownloadNavigation,
   renderGlobalNavigation,
   renderLocalNavigation,
   siteUrl
@@ -31,11 +32,16 @@ export function initializeShell() {
     '    <div data-account-slot></div>',
     '  </div>',
     '</header>',
-    '<div class="gnb-wrap"><div data-global-nav></div></div>'
+    '<div class="gnb-wrap">',
+    '  <div data-global-nav></div>',
+    '  <div data-download-local-nav></div>',
+    '</div>'
   ].join("\n");
 
   globalSlot.querySelector("[data-brand-link]").href = siteUrl("").href;
-  renderGlobalNavigation(globalSlot.querySelector("[data-global-nav]"));
+  const downloadPanel = globalSlot.querySelector("[data-download-local-nav]");
+  renderDownloadNavigation(downloadPanel);
+  renderGlobalNavigation(globalSlot.querySelector("[data-global-nav]"), downloadPanel);
 
   const localSlot = document.querySelector("[data-local-nav]");
   if (localSlot) renderLocalNavigation(localSlot);
