@@ -30,6 +30,7 @@ jobs:
           find site/assets -name '*.js' -print0 | xargs -0 -n1 node --check
           node scripts/validate-site.mjs
           node --test scripts/test-release-catalog-client.mjs
+          node --test scripts/test-dashboard-categories.mjs
 
       - name: Validate Registry hosting boundary
         run: |
