@@ -1,7 +1,12 @@
-const NAVIGATION = {
+const GLOBAL_NAVIGATION = [
+  { key: "dashboard", label: "대시보드", path: "" },
+  { key: "download", label: "다운로드", path: "marketplace/" },
+  { key: "settings", label: "내설정", path: "settings/" }
+];
+
+const LOCAL_NAVIGATION = {
   download: {
     label: "다운로드",
-    home: "marketplace/",
     items: [
       { key: "marketplace", label: "SCTool 도구", path: "marketplace/" },
       { key: "simple-connection", label: "Simple Connection", path: "application/simple_connection/downloads/" }
@@ -9,7 +14,6 @@ const NAVIGATION = {
   },
   settings: {
     label: "내설정",
-    home: "settings/",
     items: [
       { key: "my-sctool", label: "내 SCTool", path: "settings/my-sctool/" },
       { key: "preferences", label: "설정", path: "settings/preferences/" }
@@ -53,13 +57,15 @@ export function renderGlobalNavigation(container) {
   nav.className = "gnb shell";
   nav.setAttribute("aria-label", "Global navigation");
 
-  for (const key of ["download", "settings"]) {
-    const group = NAVIGATION[key];
+  for (const item of GLOBAL_NAVIGATION) {
     const link = document.createElement("a");
-    link.href = siteUrl(group.home).href;
-    link.textContent = group.label;
+    link.href = siteUrl(item.path).href;
+    link.textContent = item.label;
     link.className = "gnb-link";
-    if (section === key) link.classList.add("active");
+    if (section === item.key) {
+      link.classList.add("active");
+      link.setAttribute("aria-current", "page");
+    }
     nav.append(link);
   }
 
@@ -69,7 +75,7 @@ export function renderGlobalNavigation(container) {
 export function renderLocalNavigation(container) {
   const section = document.body.dataset.section || "dashboard";
   const activeKey = document.body.dataset.subnav || "";
-  const group = NAVIGATION[section];
+  const group = LOCAL_NAVIGATION[section];
 
   container.replaceChildren();
   if (!group) {

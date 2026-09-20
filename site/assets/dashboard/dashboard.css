@@ -1,23 +1,121 @@
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 32px;
+.dashboard-recommendations { margin-top: 30px; }
+.dashboard-section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
 }
-.dashboard-card {
-  min-height: 210px;
-  padding: 24px;
+.dashboard-section-head h2 { margin: 0; font-size: 28px; letter-spacing: -.045em; }
+.dashboard-section-head p { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.dashboard-section-head .button-secondary { flex: 0 0 auto; }
+#dashboard-registry-status { margin-bottom: 28px; }
+.recommendation-section { margin: 0 0 36px; }
+.recommendation-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+.recommendation-head h2 { margin: 0; font-size: 20px; letter-spacing: -.035em; }
+.recommendation-head p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+.carousel-controls { display: flex; gap: 6px; }
+.carousel-button {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+.carousel-button:disabled { opacity: .35; cursor: default; }
+.recommendation-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(250px, 285px);
+  gap: 12px;
+  overflow-x: auto;
+  padding: 2px 2px 12px;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+.recommendation-card {
+  min-height: 238px;
   display: flex;
   flex-direction: column;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: var(--surface);
+  scroll-snap-align: start;
 }
-.dashboard-card .card-kicker {
-  margin: 0 0 8px;
-  color: var(--muted);
+.recommendation-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.recommendation-avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--accent-contrast);
+  background: var(--accent);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: .12em;
+  text-transform: uppercase;
 }
-.dashboard-card h2 { margin: 0; font-size: 23px; letter-spacing: -.04em; }
-.dashboard-card p { margin: 10px 0 24px; color: var(--muted); font-size: 13px; line-height: 1.65; }
-.dashboard-actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; }
-@media (max-width: 700px) { .dashboard-grid { grid-template-columns: 1fr; } }
+.recommendation-version {
+  padding: 5px 7px;
+  border-radius: 7px;
+  color: var(--muted);
+  background: var(--surface-soft);
+  font-size: 10px;
+}
+.recommendation-card h3 {
+  margin: 15px 0 4px;
+  font-size: 17px;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+.recommendation-publisher { margin: 0; color: var(--muted); font-size: 11px; }
+.recommendation-summary {
+  margin: 12px 0 16px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.62;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.recommendation-link {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+}
+.dashboard-empty {
+  padding: 54px 20px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 16px;
+  color: var(--muted);
+  text-align: center;
+  background: rgba(255,255,255,.35);
+}
+.dashboard-empty strong { display: block; margin-bottom: 6px; color: var(--text); font-size: 15px; }
+.dashboard-empty p { margin: 0; font-size: 12px; line-height: 1.6; }
+@media (max-width: 650px) {
+  .dashboard-section-head { align-items: flex-start; flex-direction: column; }
+  .recommendation-head { align-items: center; }
+  .recommendation-carousel { grid-auto-columns: minmax(235px, 82vw); }
+}
+@media (prefers-color-scheme: dark) {
+  .dashboard-empty { background: rgba(255,255,255,.02); }
+}

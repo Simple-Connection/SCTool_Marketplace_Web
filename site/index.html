@@ -18,45 +18,32 @@
       <header class="page-heading">
         <p class="page-kicker">SIMPLE CONNECTION</p>
         <h1>Application Dashboard</h1>
-        <p class="page-lead">SCTool을 찾고 Simple Connection 프로그램을 내려받거나, 계정 연결 이후 사용할 개인 설정 영역으로 이동합니다.</p>
+        <p class="page-lead">Registry에 공개된 SCTool을 카테고리별로 살펴보고 Marketplace 상세 페이지로 이동합니다.</p>
       </header>
 
-      <section class="dashboard-grid" aria-label="주요 기능">
-        <article class="panel dashboard-card">
-          <p class="card-kicker">DOWNLOAD</p>
-          <h2>SCTool Marketplace</h2>
-          <p>Registry가 공개한 SCTool을 검색하고 세부정보를 확인합니다.</p>
-          <div class="dashboard-actions">
-            <a class="button-primary" data-site-path="marketplace/">Marketplace 열기</a>
+      <section class="dashboard-recommendations" aria-labelledby="recommendation-title">
+        <div class="dashboard-section-head">
+          <div>
+            <h2 id="recommendation-title">추천 SCTool</h2>
+            <p>Registry의 Marketplace projection을 사용하며 각 카테고리는 최대 10개 도구를 표시합니다.</p>
           </div>
-        </article>
+          <a class="button-secondary" data-site-path="marketplace/">Marketplace 전체 보기</a>
+        </div>
 
-        <article class="panel dashboard-card">
-          <p class="card-kicker">APPLICATION</p>
-          <h2>Simple Connection</h2>
-          <p>Application Worker가 제공하는 release catalog를 기준으로 최신 버전과 이전 버전을 확인합니다.</p>
-          <div class="dashboard-actions">
-            <a class="button-primary" data-site-path="application/simple_connection/downloads/">다운로드</a>
+        <div id="dashboard-registry-status" class="status-card status-loading" role="status" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <div>
+            <strong>추천 SCTool 준비 중</strong>
+            <p>Registry Marketplace snapshot을 확인하고 있습니다.</p>
           </div>
-        </article>
+        </div>
 
-        <article class="panel dashboard-card">
-          <p class="card-kicker">MY SCTOOL</p>
-          <h2>내 SCTool</h2>
-          <p>향후 GitHub 계정 인증 계약과 연결될 개인 SCTool 관리 영역입니다.</p>
-          <div class="dashboard-actions">
-            <a class="button-secondary" data-site-path="settings/my-sctool/">내 SCTool</a>
-          </div>
-        </article>
+        <div id="dashboard-categories"></div>
 
-        <article class="panel dashboard-card">
-          <p class="card-kicker">SETTINGS</p>
-          <h2>설정</h2>
-          <p>사이트와 계정 연결에 관련된 사용자 설정을 독립된 영역에서 관리합니다.</p>
-          <div class="dashboard-actions">
-            <a class="button-secondary" data-site-path="settings/preferences/">설정 열기</a>
-          </div>
-        </article>
+        <div id="dashboard-empty" class="dashboard-empty" hidden>
+          <strong>표시할 추천 SCTool이 없습니다.</strong>
+          <p>Registry에 Marketplace profile이 게시되면 Dashboard 캐러셀에 자동으로 표시됩니다.</p>
+        </div>
       </section>
     </main>
   </div>
