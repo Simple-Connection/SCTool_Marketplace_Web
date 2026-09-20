@@ -13,6 +13,8 @@ const required = [
   "site/assets/shared/search.js",
   "site/assets/shared/account.js",
   "site/assets/dashboard/dashboard.js",
+  "site/assets/dashboard/categories.js",
+  "site/assets/dashboard/dashboard.css",
   "site/assets/marketplace/marketplace.js",
   "site/assets/marketplace/marketplace.css",
   "site/assets/registry-client.js",
@@ -43,7 +45,9 @@ const [
   downloads,
   shell,
   navigation,
-  account
+  account,
+  dashboard,
+  dashboardCategories
 ] = await Promise.all([
   readFile("site/index.html", "utf8"),
   readFile("site/marketplace/index.html", "utf8"),
@@ -55,7 +59,9 @@ const [
   readFile("site/assets/application/simple-connection/downloads.js", "utf8"),
   readFile("site/assets/shared/shell.js", "utf8"),
   readFile("site/assets/shared/navigation.js", "utf8"),
-  readFile("site/assets/shared/account.js", "utf8")
+  readFile("site/assets/shared/account.js", "utf8"),
+  readFile("site/assets/dashboard/dashboard.js", "utf8"),
+  readFile("site/assets/dashboard/categories.js", "utf8")
 ]);
 
 const failures = [];
@@ -74,6 +80,11 @@ for (const [label, html] of [
 }
 
 require(dashboardHtml.includes("assets/dashboard/dashboard.js"), "Dashboard must load dashboard.js.");
+require(dashboardHtml.includes("dashboard-categories"), "Dashboard must expose category carousel mount.");
+require(dashboard.includes('from "../registry-client.js"'), "Dashboard recommendations must consume the existing Registry client boundary.");
+require(dashboard.includes("buildDashboardCategories"), "Dashboard must render through the category projection module.");
+require(dashboardCategories.includes("DASHBOARD_CATEGORY_LIMIT = 10"), "Dashboard categories must be capped at ten SCTools.");
+require(!dashboardCategories.includes("toLocaleLowerCase"), "Dashboard category projection must not infer semantic categories from free text.");
 require(marketplaceHtml.includes("assets/marketplace/marketplace.js"), "Marketplace must load marketplace.js.");
 require(
   downloadsHtml.includes("assets/application/simple-connection/downloads.js"),
@@ -82,6 +93,9 @@ require(
 require(marketplace.includes('from "../registry-client.js"'), "Marketplace must consume the existing registry-client boundary.");
 require(marketplace.includes('new URL(window.location.href).searchParams.get("q")'), "Marketplace must consume Header search query q.");
 require(shell.includes("initializeGlobalSearch"), "Application Shell must own the global Header search.");
+require(navigation.includes('label: "대시보드"'), "GNB must expose Dashboard.");
+require(navigation.includes('label: "다운로드"'), "GNB must expose Downloads.");
+require(navigation.includes('label: "내설정"'), "GNB must expose Settings.");
 require(navigation.includes("application/simple_connection/downloads/"), "Download navigation must expose Simple Connection.");
 require(account.includes('authState = "unconfigured"'), "GitHub account slot must remain explicitly unconfigured.");
 
