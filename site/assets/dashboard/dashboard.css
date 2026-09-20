@@ -1,0 +1,23 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+.dashboard-card {
+  min-height: 210px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-card .card-kicker {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+.dashboard-card h2 { margin: 0; font-size: 23px; letter-spacing: -.04em; }
+.dashboard-card p { margin: 10px 0 24px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+.dashboard-actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 700px) { .dashboard-grid { grid-template-columns: 1fr; } }

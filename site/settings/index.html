@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko" data-site-root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>내설정 · Simple Connection</title>
+  <link rel="stylesheet" href="../assets/shared/shell.css" />
+  <link rel="stylesheet" href="../assets/settings/settings.css" />
+  <script type="module" src="../assets/settings/settings.js"></script>
+</head>
+<body data-section="settings">
+  <div data-global-shell></div>
+  <div class="shell app-layout">
+    <aside class="local-nav" data-local-nav></aside>
+    <main id="main-content" class="page-content">
+      <header class="page-heading">
+        <p class="page-kicker">SETTINGS</p>
+        <h1>내설정</h1>
+        <p class="page-lead">개인 SCTool과 사용자 설정을 서로 다른 책임 영역으로 분리합니다. GitHub 인증 계약은 계정 슬롯과 별도로 차후 연결합니다.</p>
+      </header>
+      <section class="settings-grid">
+        <article class="panel settings-card">
+          <h2>내 SCTool</h2>
+          <p>인증 계약이 연결된 이후 사용자의 SCTool 관리 기능이 들어갈 영역입니다.</p>
+          <a class="button-secondary" data-site-path="settings/my-sctool/">열기</a>
+        </article>
+        <article class="panel settings-card">
+          <h2>설정</h2>
+          <p>사이트와 계정 연결에 관련된 사용자 환경 설정을 관리할 독립 영역입니다.</p>
+          <a class="button-secondary" data-site-path="settings/preferences/">열기</a>
+        </article>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

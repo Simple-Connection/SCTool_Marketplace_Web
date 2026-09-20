@@ -1,0 +1,54 @@
+.download-intro { display: grid; gap: 18px; }
+#release-status { margin-bottom: 18px; }
+.latest-release {
+  padding: 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+.latest-label { margin: 0 0 8px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .14em; }
+.latest-version { margin: 0; font-size: clamp(32px, 5vw, 50px); letter-spacing: -.05em; }
+.latest-meta { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+.latest-release .button-primary { min-height: 46px; padding-inline: 18px; }
+.release-table-wrap { overflow-x: auto; }
+.release-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.release-table th, .release-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.release-table th { color: var(--muted); background: var(--surface-soft); font-size: 11px; letter-spacing: .04em; }
+.release-table tr:last-child td { border-bottom: 0; }
+.release-version { font-weight: 800; }
+.release-state {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.release-state.latest { color: #276644; background: #eef8f2; border: 1px solid #cfe2d7; }
+.release-state.previous { color: var(--muted); background: var(--surface-soft); border: 1px solid var(--border); }
+.release-table td:nth-child(4) span, .release-table td:nth-child(4) small { display: block; }
+.release-table td:nth-child(4) small { margin-top: 3px; color: var(--muted); font-size: 11px; }
+.download-link { text-underline-offset: 3px; font-weight: 800; }
+.catalog-note { margin-top: 14px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+@media (max-width: 620px) {
+  .latest-release { grid-template-columns: 1fr; padding: 22px; }
+  .latest-release .button-primary { width: 100%; }
+}
+@media (prefers-color-scheme: dark) {
+  .release-state.latest { color: #8bd3aa; border-color: #284d38; background: #17291f; }
+}

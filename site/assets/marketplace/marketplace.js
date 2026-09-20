@@ -1,9 +1,7 @@
-import {
-  MarketplaceDataError,
-  loadMarketplace,
-} from "./registry-client.js";
+import { MarketplaceDataError, loadMarketplace } from "../registry-client.js";
+import { initializeShell } from "../shared/shell.js";
 
-const searchInput = document.querySelector("#search-input");
+const { searchInput } = initializeShell();
 const toolGrid = document.querySelector("#tool-grid");
 const emptyState = document.querySelector("#empty-state");
 const emptyTitle = document.querySelector("#empty-title");
@@ -19,12 +17,15 @@ const dialogContent = document.querySelector("#dialog-content");
 const dialogMeta = document.querySelector("#dialog-meta");
 const detailTabs = Array.from(document.querySelectorAll(".detail-tab"));
 
+const initialQuery = new URL(window.location.href).searchParams.get("q") || "";
+searchInput.value = initialQuery;
+
 const state = {
   items: [],
-  query: "",
+  query: initialQuery,
   selected: null,
   tab: "details",
-  provenance: null,
+  provenance: null
 };
 
 function normalize(value) {
@@ -33,7 +34,7 @@ function normalize(value) {
 
 function formatBytes(value) {
   if (!Number.isFinite(value) || value < 0) return "";
-  if (value < 1024) return `${value} B`;
+  if (value < 1024) return String(value) + " B";
   const units = ["KB", "MB", "GB"];
   let size = value / 1024;
   let unit = units[0];
@@ -41,7 +42,7 @@ function formatBytes(value) {
     size /= 1024;
     unit = units[i];
   }
-  return `${size >= 10 ? size.toFixed(0) : size.toFixed(1)} ${unit}`;
+  return (size >= 10 ? size.toFixed(0) : size.toFixed(1)) + " " + unit;
 }
 
 function initials(packageId) {
@@ -65,7 +66,7 @@ function searchableText(item) {
     item.profile.features,
     item.profile.changelog,
     item.profile.dependencies,
-    item.profile.extension_pack,
+    item.profile.extension_pack
   ].join(" "));
 }
 
@@ -76,7 +77,7 @@ function filteredItems() {
 }
 
 function setStatus(kind, title, copy) {
-  registryStatus.className = `status-card status-${kind}`;
+  registryStatus.className = "status-card status-" + kind;
   registryStatus.querySelector("strong").textContent = title;
   registryStatus.querySelector("p").textContent = copy;
 }
@@ -100,7 +101,7 @@ function createCard(item) {
   const version = document.createElement("span");
   version.className = "tool-version mono";
   version.textContent = item.version
-    ? `${item.defaultChannel || "channel"} · v${item.version}`
+    ? (item.defaultChannel || "channel") + " · v" + item.version
     : item.defaultChannel || "Registry";
 
   top.append(avatar, version);
@@ -110,9 +111,7 @@ function createCard(item) {
 
   const publisher = document.createElement("p");
   publisher.className = "tool-publisher";
-  publisher.textContent = item.publisherName
-    ? `게시자 · ${item.publisherName}`
-    : "게시자 정보 없음";
+  publisher.textContent = item.publisherName ? "게시자 · " + item.publisherName : "게시자 정보 없음";
 
   const summary = document.createElement("p");
   summary.className = "tool-summary";
@@ -133,8 +132,8 @@ function renderList() {
 
   resultCount.textContent = state.items.length
     ? state.query.trim()
-      ? `${items.length} / ${state.items.length}개`
-      : `${state.items.length}개`
+      ? String(items.length) + " / " + String(state.items.length) + "개"
+      : String(state.items.length) + "개"
     : "";
 
   if (!items.length) {
@@ -143,11 +142,10 @@ function renderList() {
 
     if (state.query.trim() && state.items.length) {
       emptyTitle.textContent = "검색 결과가 없습니다.";
-      emptyCopy.textContent = `“${state.query.trim()}”에 해당하는 Marketplace SCTool을 찾지 못했습니다.`;
+      emptyCopy.textContent = "“" + state.query.trim() + "”에 해당하는 Marketplace SCTool을 찾지 못했습니다.";
     } else {
       emptyTitle.textContent = "표시할 Marketplace SCTool이 없습니다.";
-      emptyCopy.textContent =
-        "Registry에 Marketplace profile이 게시되면 이 목록에 자동으로 표시됩니다.";
+      emptyCopy.textContent = "Registry에 Marketplace profile이 게시되면 이 목록에 자동으로 표시됩니다.";
     }
     return;
   }
@@ -155,6 +153,13 @@ function renderList() {
   emptyState.hidden = true;
   toolGrid.hidden = false;
   for (const item of items) toolGrid.append(createCard(item));
+}
+
+function updateQueryUrl() {
+  const url = new URL(window.location.href);
+  if (state.query.trim()) url.searchParams.set("q", state.query.trim());
+  else url.searchParams.delete("q");
+  history.replaceState(history.state, "", url);
 }
 
 function addMeta(label, value, href = "") {
@@ -182,7 +187,7 @@ function renderDetailMeta(item) {
   addMeta("Package ID", item.id);
   addMeta("게시자", item.publisherName || item.publisherId);
   addMeta("기본 채널", item.defaultChannel);
-  addMeta("현재 버전", item.version ? `v${item.version}` : "");
+  addMeta("현재 버전", item.version ? "v" + item.version : "");
   addMeta("소스 공개 상태", item.sourceVisibility);
   addMeta("소스 저장소", item.sourceRepository, item.sourceRepository);
 
@@ -190,11 +195,8 @@ function renderDetailMeta(item) {
     addMeta(
       "Artifact",
       item.artifacts
-        .map((artifact) => {
-          const size = formatBytes(artifact.size);
-          return [artifact.target, artifact.filename, size].filter(Boolean).join(" · ");
-        })
-        .join(" / "),
+        .map((artifact) => [artifact.target, artifact.filename, formatBytes(artifact.size)].filter(Boolean).join(" · "))
+        .join(" / ")
     );
   }
 }
@@ -205,7 +207,7 @@ function availableTabs(item) {
     features: item.profile.features,
     changelog: item.profile.changelog,
     dependencies: item.profile.dependencies,
-    extension_pack: item.profile.extension_pack,
+    extension_pack: item.profile.extension_pack
   };
 }
 
@@ -217,8 +219,7 @@ function selectTab(tab) {
 
   for (const button of detailTabs) {
     const key = button.dataset.tab;
-    const optional = button.classList.contains("optional-tab");
-    if (optional) button.hidden = !tabs[key];
+    if (button.classList.contains("optional-tab")) button.hidden = !tabs[key];
     button.classList.toggle("active", key === tab);
     button.setAttribute("aria-selected", key === tab ? "true" : "false");
   }
@@ -231,13 +232,13 @@ function openDetail(item, { updateUrl = true } = {}) {
   dialogTitle.textContent = item.id;
   dialogPublisher.textContent = item.publisherName || item.publisherId || "SCTOOL";
   dialogVersion.textContent = item.version
-    ? `${item.defaultChannel || "Registry"} · v${item.version}`
+    ? (item.defaultChannel || "Registry") + " · v" + item.version
     : item.defaultChannel || "Registry package";
   renderDetailMeta(item);
   selectTab("details");
 
   if (updateUrl) {
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     url.searchParams.set("tool", item.id);
     history.pushState({ tool: item.id }, "", url);
   }
@@ -249,14 +250,14 @@ function closeDetail({ updateUrl = true } = {}) {
   if (dialog.open) dialog.close();
   state.selected = null;
   if (updateUrl) {
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     url.searchParams.delete("tool");
     history.pushState({}, "", url);
   }
 }
 
 function openFromUrl() {
-  const id = new URL(location.href).searchParams.get("tool");
+  const id = new URL(window.location.href).searchParams.get("tool");
   if (!id) {
     if (dialog.open) dialog.close();
     state.selected = null;
@@ -268,14 +269,8 @@ function openFromUrl() {
 
 searchInput.addEventListener("input", () => {
   state.query = searchInput.value;
+  updateQueryUrl();
   renderList();
-});
-
-document.addEventListener("keydown", (event) => {
-  if (event.key === "/" && document.activeElement !== searchInput && !dialog.open) {
-    event.preventDefault();
-    searchInput.focus();
-  }
 });
 
 for (const button of detailTabs) {
@@ -290,7 +285,12 @@ dialog.addEventListener("click", (event) => {
   if (event.target === dialog) closeDetail();
 });
 
-window.addEventListener("popstate", openFromUrl);
+window.addEventListener("popstate", () => {
+  state.query = new URL(window.location.href).searchParams.get("q") || "";
+  searchInput.value = state.query;
+  renderList();
+  openFromUrl();
+});
 
 async function initialize() {
   try {
@@ -303,20 +303,14 @@ async function initialize() {
         "ready",
         "Registry Marketplace 연결됨",
         result.skipped
-          ? `${result.items.length}개 도구를 표시합니다. 계약을 충족하지 못한 profile ${result.skipped}개는 표시하지 않았습니다.`
-          : `${result.items.length}개 Marketplace 도구를 Registry snapshot에서 불러왔습니다.`,
+          ? String(result.items.length) + "개 도구를 표시합니다. 계약을 충족하지 못한 profile " + String(result.skipped) + "개는 표시하지 않았습니다."
+          : String(result.items.length) + "개 Marketplace 도구를 Registry snapshot에서 불러왔습니다."
       );
     } else {
-      setStatus(
-        "ready",
-        "Registry 연결됨 · Marketplace 대기 중",
-        "현재 snapshot에는 표시 가능한 Marketplace profile이 없습니다.",
-      );
+      setStatus("ready", "Registry 연결됨 · Marketplace 대기 중", "현재 snapshot에는 표시 가능한 Marketplace profile이 없습니다.");
     }
 
-    registryRevision.textContent =
-      `Registry seq ${result.provenance.sequence} · ${result.provenance.revision}`;
-
+    registryRevision.textContent = "Registry seq " + String(result.provenance.sequence) + " · " + result.provenance.revision;
     renderList();
     openFromUrl();
   } catch (error) {
@@ -324,13 +318,12 @@ async function initialize() {
     const code = known ? error.code : "UNKNOWN";
     const message = known ? error.message : "Marketplace 데이터를 불러오는 중 오류가 발생했습니다.";
 
-    setStatus("error", "Registry Marketplace를 불러오지 못했습니다.", `${message} [${code}]`);
+    setStatus("error", "Registry Marketplace를 불러오지 못했습니다.", message + " [" + code + "]");
     registryRevision.textContent = "Registry unavailable";
     toolGrid.hidden = true;
     emptyState.hidden = false;
     emptyTitle.textContent = "Marketplace 데이터 대기 중";
-    emptyCopy.textContent =
-      "사이트 자체는 정상 배포되었습니다. Registry 1.0.3의 Marketplace snapshot이 운영 Pages에 게시되면 목록이 자동으로 나타납니다.";
+    emptyCopy.textContent = "사이트 자체는 정상 배포되었습니다. Registry Marketplace snapshot이 게시되면 목록이 자동으로 나타납니다.";
   }
 }
 
