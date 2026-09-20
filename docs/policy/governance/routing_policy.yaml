@@ -33,6 +33,74 @@ implementation:
     unavailable_action: REVIEW_REQUIRED
     provider_output_must_match_schema: docs/policy/schemas/preparation/ai-assist-response.schema.yaml
 
+  provisional_implementation_candidates:
+    status: TEMPORARILY_APPROVED
+    approval_scope: IMPLEMENTATION_CANDIDATE
+    approved_on: "2026-09-20"
+    permanent_approval: false
+    implementation_may_proceed: true
+    final_governance_authority: false
+    review_required_before_permanent_approval: true
+    revocable: true
+    review_triggers:
+      - WEBSITE_INTEGRATION_CHECK
+      - NEW_ROUTING_FAILURE
+      - BOUNDARY_AMBIGUITY
+      - FALSE_POSITIVE_OR_FALSE_NEGATIVE
+      - AUTHORITY_OWNERSHIP_CHANGE
+    change_rule: Temporary approval permits implementation and testing, but any candidate may be revised, split, replaced, or withdrawn when evidence from website integration or routing behavior shows a problem.
+    candidates:
+      MIXED_CLAIM_EVIDENCE_PRESERVATION:
+        status: TEMPORARILY_APPROVED
+        purpose: Preserve machine-confirmed namespace and variant evidence even when another claim keeps the overall candidate unresolved.
+        requirements:
+          - CONFIRMED_CLAIMS_MUST_RETAIN_NAMESPACE_AND_VARIANT_EVIDENCE
+          - UNRESOLVED_CLAIMS_MUST_REMAIN_SEPARATE
+          - OVERALL_REVIEW_REQUIRED_MUST_NOT_ERASE_CONFIRMED_EVIDENCE
+
+      DETERMINISTIC_GAP_ANALYZER:
+        status: TEMPORARILY_APPROVED
+        purpose: Diagnose unresolved exact tuples without guessing the nearest namespace.
+        decision_method: EXACT_CONSTRAINT_ELIMINATION
+        evidence_inputs:
+          - STATE_OWNER_OWNERSHIP
+          - RELATION_CONTRACT
+          - AUTHORITY_BOUNDARY
+          - EXCLUSION_RULES
+        initial_gap_classes:
+          - VARIANT_GAP
+          - ONTOLOGY_GAP
+          - RESPONSIBILITY_AMBIGUITY
+        candidate_namespace_rule: A candidate namespace may be emitted only when deterministic constraints leave exactly one namespace.
+        forbidden:
+          - NEAREST_NAMESPACE_MATCH
+          - WEIGHTED_SCORING
+          - PROBABILISTIC_NAMESPACE_SELECTION
+
+      SOURCE_FINGERPRINT_REUSE:
+        status: TEMPORARILY_APPROVED
+        purpose: Avoid repeated AI assistance for an identical source input after a prior AI-assisted result has passed machine re-verification and an improvement has been approved.
+        exact_source_fingerprint_only: true
+        semantic_similarity_matching: FORBIDDEN
+        prior_machine_verified_claim_set_required: true
+        promotion_requires_user_approval: true
+        runtime_self_promotion: FORBIDDEN
+        source_template_generalization:
+          status: DEFERRED_CANDIDATE
+          automatic_enablement: FORBIDDEN
+
+      SPLIT_GROUPING:
+        status: TEMPORARILY_APPROVED
+        purpose: Group machine-confirmed claims by responsibility after classification so multi-responsibility candidates can produce an actionable split plan.
+        grouping_key: MACHINE_VERIFIED_NAMESPACE
+        requirements:
+          - CLAIM_INDEX_MUST_BE_PRESERVED
+          - ONLY_MACHINE_VERIFIED_CLAIMS_MAY_ENTER_CONFIRMED_GROUPS
+          - UNRESOLVED_CLAIMS_MUST_NOT_BE_FORCED_INTO_A_GROUP
+          - GROUPING_MUST_NOT_TRANSFER_NAMESPACE_OWNERSHIP
+        outcome_rule: Use SPLIT_REQUIRED only when independent machine-verified responsibilities require separate handling; otherwise retain REVIEW_REQUIRED while unresolved claims remain.
+
+
 pipeline:
   - stage: INTAKE
     responsibility: Validate candidate structure before semantic routing.
