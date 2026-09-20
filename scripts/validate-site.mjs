@@ -81,6 +81,7 @@ for (const [label, html] of [
 
 require(dashboardHtml.includes("assets/dashboard/dashboard.js"), "Dashboard must load dashboard.js.");
 require(dashboardHtml.includes("dashboard-categories"), "Dashboard must expose category carousel mount.");
+require(!dashboardHtml.includes("Marketplace 전체 보기"), "Dashboard must not expose a Marketplace-wide CTA; GNB owns top-level navigation.");
 require(dashboard.includes('from "../registry-client.js"'), "Dashboard recommendations must consume the existing Registry client boundary.");
 require(dashboard.includes("buildDashboardCategories"), "Dashboard must render through the category projection module.");
 require(dashboardCategories.includes("DASHBOARD_CATEGORY_LIMIT = 10"), "Dashboard categories must be capped at ten SCTools.");
