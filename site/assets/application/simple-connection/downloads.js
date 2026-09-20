@@ -2,6 +2,7 @@ import {
   ReleaseCatalogError,
   loadReleaseCatalog
 } from "./release-catalog-client.js";
+import { buildReleaseViewModel } from "./release-view-model.js";
 import { initializeShell } from "../../shared/shell.js";
 
 initializeShell();
@@ -13,6 +14,7 @@ const latestMeta = document.querySelector("#latest-meta");
 const latestDownload = document.querySelector("#latest-download");
 const tableWrap = document.querySelector("#release-table-wrap");
 const tableBody = document.querySelector("#release-table-body");
+const emptyState = document.querySelector("#release-empty");
 
 function setStatus(kind, title, copy) {
   status.className = "status-card status-" + kind;
@@ -20,93 +22,110 @@ function setStatus(kind, title, copy) {
   status.querySelector("p").textContent = copy;
 }
 
-function formatDate(value) {
-  const exactDate = /^\d{4}-\d{2}-\d{2}/.exec(value);
-  return exactDate ? exactDate[0] : value;
-}
-
-function formatBytes(value) {
-  if (value < 1024) return String(value) + " B";
-  const units = ["KB", "MB", "GB"];
-  let size = value / 1024;
-  let unit = units[0];
-  for (let i = 1; i < units.length && size >= 1024; i += 1) {
-    size /= 1024;
-    unit = units[i];
-  }
-  return (size >= 10 ? size.toFixed(0) : size.toFixed(1)) + " " + unit;
-}
-
 function clearRows() {
   while (tableBody.firstChild) tableBody.firstChild.remove();
 }
 
-function downloadLink(release, label = "Download") {
+function downloadLink(row, label = "Download") {
   const link = document.createElement("a");
   link.className = "download-link";
-  link.href = release.resolvedDownloadUrl;
+  link.href = row.downloadUrl;
   link.rel = "noreferrer";
   link.textContent = label;
   return link;
 }
 
-function renderTable(catalog) {
+function renderTable(rows) {
   clearRows();
-  for (const release of catalog.releases) {
+
+  for (const release of rows) {
     const row = document.createElement("tr");
 
     const version = document.createElement("td");
-    version.textContent = release.displayVersion;
+    version.textContent = release.version;
     version.className = "release-version";
 
     const state = document.createElement("td");
     const badge = document.createElement("span");
-    const latest = release.version === catalog.latestVersion;
-    badge.className = "release-state " + (latest ? "latest" : "previous");
-    badge.textContent = latest ? "Latest" : "Previous";
+    badge.className = "release-state " + (release.latest ? "latest" : "previous");
+    badge.textContent = release.status;
     state.append(badge);
 
+    const platform = document.createElement("td");
+    platform.textContent = release.platformLabel;
+
     const date = document.createElement("td");
-    date.textContent = formatDate(release.releasedAt);
+    date.textContent = release.releaseDate;
 
     const file = document.createElement("td");
-    const platform = document.createElement("span");
-    platform.textContent = "Windows x64";
-    const size = document.createElement("small");
-    size.textContent = formatBytes(release.size);
-    file.append(platform, size);
+    const fileName = document.createElement("span");
+    fileName.textContent = release.fileName;
+    file.append(fileName);
+    if (release.sizeLabel) {
+      const size = document.createElement("small");
+      size.textContent = release.sizeLabel;
+      file.append(size);
+    }
 
     const action = document.createElement("td");
     action.append(downloadLink(release));
 
-    row.append(version, state, date, file, action);
+    row.append(version, state, platform, date, file, action);
     tableBody.append(row);
   }
 }
 
 function renderCatalog(catalog) {
-  const latest = catalog.releases.find((release) => release.version === catalog.latestVersion);
+  const view = buildReleaseViewModel(catalog);
+  clearRows();
 
-  latestVersion.textContent = latest.displayVersion;
-  latestMeta.textContent = "Windows x64 · " + formatDate(latest.releasedAt) + " · " + formatBytes(latest.size);
-  latestDownload.href = latest.resolvedDownloadUrl;
+  if (view.empty) {
+    latestPanel.hidden = true;
+    tableWrap.hidden = true;
+    emptyState.hidden = false;
+    setStatus("ready", "Release catalog 연결됨", "현재 공개된 Simple Connection release가 없습니다.");
+    return;
+  }
+
+  emptyState.hidden = true;
+  const latest = view.latest;
+  latestVersion.textContent = latest.version;
+  latestMeta.textContent = [
+    latest.platformLabel,
+    latest.releaseDate,
+    latest.fileName,
+    latest.sizeLabel
+  ].filter(Boolean).join(" · ");
+  latestDownload.href = latest.downloadUrl;
   latestDownload.rel = "noreferrer";
 
-  renderTable(catalog);
+  renderTable(view.rows);
   latestPanel.hidden = false;
   tableWrap.hidden = false;
-  setStatus("ready", "Release catalog 연결됨", String(catalog.releases.length) + "개 릴리스를 Application Worker에서 불러왔습니다.");
+  setStatus(
+    "ready",
+    "Release catalog 연결됨",
+    String(view.rows.length) + "개 릴리스를 SC_Linked_App canonical API에서 불러왔습니다."
+  );
 }
 
 function renderFailure(error) {
   latestPanel.hidden = true;
   tableWrap.hidden = true;
+  emptyState.hidden = true;
   clearRows();
 
   const known = error instanceof ReleaseCatalogError;
   const code = known ? error.code : "UNKNOWN";
-  const message = known ? error.message : "Release catalog를 불러오는 중 오류가 발생했습니다.";
-  setStatus("error", "Simple Connection 다운로드 정보를 불러올 수 없습니다.", message + " [" + code + "]");
+  const message = known
+    ? error.diagnosticText()
+    : "Release catalog를 불러오는 중 알 수 없는 오류가 발생했습니다.";
+
+  setStatus(
+    "error",
+    "Simple Connection 다운로드 정보를 불러올 수 없습니다.",
+    message + " [" + code + "]"
+  );
 }
 
 async function initialize() {

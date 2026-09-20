@@ -1,66 +1,133 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  SIMPLE_CONNECTION_RELEASE_CATALOG_URL,
   ReleaseCatalogError,
-  resolveReleaseDownloadUrl,
+  loadReleaseCatalog,
   validateReleaseCatalog
 } from "../site/assets/application/simple-connection/release-catalog-client.js";
 
-const workerBase = "https://worker.example.test/";
-
 function sampleCatalog() {
   return {
-    latestVersion: "release-next",
+    schemaVersion: 1,
+    latestVersion: "2.2.4a1",
+    platform: "win",
+    arch: "x64",
     releases: [
       {
-        version: "release-next",
-        displayVersion: "Next",
-        releasedAt: "2026-09-19T00:00:00Z",
-        size: 1024,
-        downloadUrl: "/application/simple_connection/update/desktop/win/x64/releases/release-next/app.exe"
+        version: "2.2.4a1",
+        updaterVersion: "2.2.4-alpha.1",
+        platform: "win",
+        arch: "x64",
+        channel: "stable",
+        fileName: "Simple-Connection-2.2.4a1-x64.exe",
+        size: 96615424,
+        releasedAt: "2026-09-20T16:27:02.169Z",
+        latest: true,
+        downloadUrl: "https://www.kswdeveloper.cloud/application/simple_connection/update/desktop/win/x64/releases/2.2.4a1/Simple-Connection-2.2.4a1-x64.exe"
       },
       {
-        version: "release-prev",
-        displayVersion: "Previous",
+        version: "2.2.3",
+        updaterVersion: "2.2.3",
+        platform: "win",
+        arch: "x64",
+        channel: "stable",
+        fileName: "Simple-Connection-2.2.3-x64.exe",
+        size: 90000000,
         releasedAt: "2026-09-01T00:00:00Z",
-        size: 512,
-        downloadUrl: "/application/simple_connection/update/desktop/win/x64/releases/release-prev/app.exe"
+        latest: false,
+        downloadUrl: "https://www.kswdeveloper.cloud/application/simple_connection/update/desktop/win/x64/releases/2.2.3/Simple-Connection-2.2.3-x64.exe"
       }
     ]
   };
 }
 
-test("validates catalog without changing Worker release order", () => {
-  const catalog = validateReleaseCatalog(sampleCatalog(), { baseUrl: workerBase });
-  assert.deepEqual(catalog.releases.map((release) => release.version), ["release-next", "release-prev"]);
+function response(status, body) {
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    async text() {
+      return text;
+    }
+  };
+}
+
+test("canonical catalog URL is exact and catalog 200 preserves API release order", async () => {
+  let requestedUrl = "";
+  const catalog = await loadReleaseCatalog({
+    fetchImpl: async (url) => {
+      requestedUrl = url;
+      return response(200, sampleCatalog());
+    }
+  });
+
   assert.equal(
-    catalog.releases[0].resolvedDownloadUrl,
-    "https://worker.example.test/application/simple_connection/update/desktop/win/x64/releases/release-next/app.exe"
+    SIMPLE_CONNECTION_RELEASE_CATALOG_URL,
+    "https://www.kswdeveloper.cloud/application/simple_connection/releases"
   );
+  assert.equal(requestedUrl, SIMPLE_CONNECTION_RELEASE_CATALOG_URL);
+  assert.deepEqual(catalog.releases.map((release) => release.version), ["2.2.4a1", "2.2.3"]);
+  assert.equal(catalog.releases[0].downloadUrl, sampleCatalog().releases[0].downloadUrl);
 });
 
-test("fails closed when latestVersion has no exact release", () => {
-  const payload = sampleCatalog();
-  payload.latestVersion = "missing";
+test("release.latest=true is canonical and must agree with latestVersion", () => {
+  const catalog = validateReleaseCatalog(sampleCatalog());
+  assert.equal(catalog.releases.find((release) => release.latest)?.version, "2.2.4a1");
+
+  const mismatch = sampleCatalog();
+  mismatch.latestVersion = "2.2.3";
   assert.throws(
-    () => validateReleaseCatalog(payload, { baseUrl: workerBase }),
+    () => validateReleaseCatalog(mismatch),
     (error) => error instanceof ReleaseCatalogError && error.code === "LATEST_RELEASE_MISMATCH"
   );
 });
 
-test("rejects download URLs outside the approved update namespace", () => {
-  assert.throws(
-    () => resolveReleaseDownloadUrl("/other/file.exe", workerBase),
-    (error) => error instanceof ReleaseCatalogError && error.code === "UNSAFE_DOWNLOAD_URL"
+test("catalog 404 exposes URL, status, and safe response body", async () => {
+  await assert.rejects(
+    () => loadReleaseCatalog({ fetchImpl: async () => response(404, { error: "not_found" }) }),
+    (error) =>
+      error instanceof ReleaseCatalogError &&
+      error.code === "CATALOG_NOT_FOUND" &&
+      error.url === SIMPLE_CONNECTION_RELEASE_CATALOG_URL &&
+      error.status === 404 &&
+      error.responseBody.includes("not_found")
   );
 });
 
-test("rejects cross-origin absolute download URLs", () => {
-  assert.throws(
-    () => resolveReleaseDownloadUrl(
-      "https://other.example.test/application/simple_connection/update/desktop/win/x64/releases/file.exe",
-      workerBase
-    ),
-    (error) => error instanceof ReleaseCatalogError && error.code === "UNSAFE_DOWNLOAD_URL"
+test("catalog 403 is a distinct access error", async () => {
+  await assert.rejects(
+    () => loadReleaseCatalog({ fetchImpl: async () => response(403, { error: "forbidden" }) }),
+    (error) => error instanceof ReleaseCatalogError && error.code === "CATALOG_ACCESS_DENIED"
   );
+});
+
+test("catalog 5xx is a distinct server error", async () => {
+  await assert.rejects(
+    () => loadReleaseCatalog({ fetchImpl: async () => response(503, { error: "unavailable" }) }),
+    (error) => error instanceof ReleaseCatalogError && error.code === "CATALOG_SERVER_ERROR"
+  );
+});
+
+test("invalid JSON is reported separately", async () => {
+  await assert.rejects(
+    () => loadReleaseCatalog({ fetchImpl: async () => response(200, "{invalid-json") }),
+    (error) => error instanceof ReleaseCatalogError && error.code === "INVALID_JSON"
+  );
+});
+
+test("unsupported schemaVersion is rejected without guessing", () => {
+  const payload = sampleCatalog();
+  payload.schemaVersion = 2;
+  assert.throws(
+    () => validateReleaseCatalog(payload),
+    (error) => error instanceof ReleaseCatalogError && error.code === "UNSUPPORTED_SCHEMA_VERSION"
+  );
+});
+
+test("empty releases are a valid empty catalog state", () => {
+  const payload = sampleCatalog();
+  payload.releases = [];
+  const catalog = validateReleaseCatalog(payload);
+  assert.deepEqual(catalog.releases, []);
 });

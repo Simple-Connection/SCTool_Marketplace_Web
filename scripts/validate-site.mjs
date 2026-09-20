@@ -20,6 +20,7 @@ const required = [
   "site/assets/marketplace/marketplace.css",
   "site/assets/registry-client.js",
   "site/assets/application/simple-connection/release-catalog-client.js",
+  "site/assets/application/simple-connection/release-view-model.js",
   "site/assets/application/simple-connection/downloads.js",
   "site/assets/application/simple-connection/downloads.css"
 ];
@@ -43,6 +44,7 @@ const [
   marketplace,
   registryClient,
   releaseClient,
+  releaseViewModel,
   downloads,
   shell,
   navigation,
@@ -58,6 +60,7 @@ const [
   readFile("site/assets/marketplace/marketplace.js", "utf8"),
   readFile("site/assets/registry-client.js", "utf8"),
   readFile("site/assets/application/simple-connection/release-catalog-client.js", "utf8"),
+  readFile("site/assets/application/simple-connection/release-view-model.js", "utf8"),
   readFile("site/assets/application/simple-connection/downloads.js", "utf8"),
   readFile("site/assets/shared/shell.js", "utf8"),
   readFile("site/assets/shared/navigation.js", "utf8"),
@@ -132,21 +135,38 @@ require(registryClient.includes("marketplaceProfiles"), "Marketplace projection 
 require(registryClient.includes("snapshot.sha256"), "Snapshot digest validation must remain present.");
 
 require(
-  releaseClient.includes('RELEASES_PATH = "/application/simple_connection/update/desktop/win/x64/releases"'),
-  "Application Worker releases endpoint contract is missing."
-);
-require(releaseClient.includes("latestMatches.length !== 1"), "Release catalog must fail closed on latestVersion mismatch.");
-require(releaseClient.includes("resolved.origin !== base.origin"), "Download URLs must stay on the configured Application Worker origin.");
-require(releaseClient.includes("DOWNLOAD_PREFIX"), "Download URLs must stay inside the approved update namespace.");
-require(!releaseClient.includes(".sort("), "Release catalog client must not reorder Worker releases.");
-require(!downloads.includes(".sort("), "Downloads UI must preserve Worker release order.");
-require(
-  downloads.includes("release.version === catalog.latestVersion"),
-  "Latest/Previous state must be derived from the same catalog latestVersion."
+  releaseClient.includes('https://www.kswdeveloper.cloud/application/simple_connection/releases'),
+  "Simple Connection downloads must consume the exact canonical SC_Linked_App catalog URL."
 );
 require(
-  downloadsHtml.includes('meta name="application-worker-base"'),
-  "Downloads page must expose the Application Worker base configuration boundary."
+  releaseClient.includes("SIMPLE_CONNECTION_RELEASE_CATALOG_URL"),
+  "Canonical Simple Connection release catalog URL must have a single explicit configuration authority."
+);
+require(!releaseClient.includes("window.location.origin"), "Release catalog URL must not be derived from the browser origin.");
+require(!releaseClient.includes("locationRef"), "Release catalog URL must not fall back to a location-derived Worker origin.");
+require(!releaseClient.includes("RELEASES_PATH"), "Legacy SC_WEP-owned release catalog route must be removed.");
+require(!releaseClient.includes("DOWNLOAD_PREFIX"), "SC_WEP must not own a release artifact path prefix.");
+require(!releaseClient.includes("displayVersion"), "SC_WEP must display the canonical product version field without a duplicate displayVersion schema.");
+require(!releaseClient.includes(".sort("), "Release catalog client must preserve SC_Linked_App release order.");
+require(!releaseViewModel.includes(".sort("), "Release view model must preserve SC_Linked_App release order.");
+require(!downloads.includes(".sort("), "Downloads UI must preserve SC_Linked_App release order.");
+require(
+  releaseViewModel.includes("release.latest === true"),
+  "Latest/Previous UI state must use release.latest as the primary authority."
+);
+require(
+  downloads.includes("row.downloadUrl") && releaseViewModel.includes("downloadUrl: release.downloadUrl"),
+  "Download href must use the API downloadUrl directly."
+);
+require(
+  !downloadsHtml.includes('application-worker-base'),
+  "Simple Connection page must not configure a browser-origin Application Worker base."
+);
+require(
+  downloadsHtml.includes("플랫폼") &&
+  downloadsHtml.includes("파일 이름") &&
+  downloadsHtml.includes("출시일"),
+  "Release history must expose the required platform, release date, and file name columns."
 );
 
 const releaseVersionLiteral = /\b\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?\b/;

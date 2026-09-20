@@ -41,10 +41,13 @@
 }
 .release-state.latest { color: #276644; background: #eef8f2; border: 1px solid #cfe2d7; }
 .release-state.previous { color: var(--muted); background: var(--surface-soft); border: 1px solid var(--border); }
-.release-table td:nth-child(4) span, .release-table td:nth-child(4) small { display: block; }
-.release-table td:nth-child(4) small { margin-top: 3px; color: var(--muted); font-size: 11px; }
+.release-table td:nth-child(5) span, .release-table td:nth-child(5) small { display: block; }
+.release-table td:nth-child(5) small { margin-top: 3px; color: var(--muted); font-size: 11px; }
 .download-link { text-underline-offset: 3px; font-weight: 800; }
 .catalog-note { margin-top: 14px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.release-empty { padding: 28px; }
+.release-empty strong { display: block; font-size: 15px; }
+.release-empty p { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
 @media (max-width: 620px) {
   .latest-release { grid-template-columns: 1fr; padding: 22px; }
   .latest-release .button-primary { width: 100%; }

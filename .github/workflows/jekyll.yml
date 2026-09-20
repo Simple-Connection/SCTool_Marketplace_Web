@@ -30,6 +30,7 @@ jobs:
           find site/assets -name '*.js' -print0 | xargs -0 -n1 node --check
           node scripts/validate-site.mjs
           node --test scripts/test-release-catalog-client.mjs
+          node --test scripts/test-release-view-model.mjs
           node --test scripts/test-dashboard-categories.mjs
           node --test scripts/test-marketplace-drawer.mjs
           node --test scripts/test-download-navigation.mjs
@@ -68,6 +69,20 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+      - name: Verify canonical Simple Connection release catalog
+        id: simple_connection_catalog
+        continue-on-error: true
+        run: node scripts/verify-simple-connection-release-catalog.mjs
+
+      - name: Upload Simple Connection catalog verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-connection-release-catalog-evidence-${{ github.sha }}
+          path: simple-connection-release-catalog-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Verify public Registry hosting exact bytes
         run: >-
           python scripts/verify-registry-handoff.py
@@ -83,3 +98,9 @@ jobs:
           path: registry-hosting-deployment-evidence.json
           if-no-files-found: error
           retention-days: 30
+
+      - name: Enforce Simple Connection catalog verification
+        if: always() && steps.simple_connection_catalog.outcome != 'success'
+        run: |
+          echo "Canonical Simple Connection release catalog verification failed." >&2
+          exit 1
