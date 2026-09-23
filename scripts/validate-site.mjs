@@ -21,6 +21,7 @@ const required = [
   "site/assets/registry-client.js",
   "site/assets/application/simple-connection/release-catalog-client.js",
   "site/assets/application/simple-connection/release-view-model.js",
+  "site/assets/application/simple-connection/release-page-view.js",
   "site/assets/application/simple-connection/downloads.js",
   "site/assets/application/simple-connection/downloads.css"
 ];
@@ -45,6 +46,7 @@ const [
   registryClient,
   releaseClient,
   releaseViewModel,
+  releasePageView,
   downloads,
   shell,
   navigation,
@@ -61,6 +63,7 @@ const [
   readFile("site/assets/registry-client.js", "utf8"),
   readFile("site/assets/application/simple-connection/release-catalog-client.js", "utf8"),
   readFile("site/assets/application/simple-connection/release-view-model.js", "utf8"),
+  readFile("site/assets/application/simple-connection/release-page-view.js", "utf8"),
   readFile("site/assets/application/simple-connection/downloads.js", "utf8"),
   readFile("site/assets/shared/shell.js", "utf8"),
   readFile("site/assets/shared/navigation.js", "utf8"),
@@ -149,14 +152,27 @@ require(!releaseClient.includes("DOWNLOAD_PREFIX"), "SC_WEP must not own a relea
 require(!releaseClient.includes("displayVersion"), "SC_WEP must display the canonical product version field without a duplicate displayVersion schema.");
 require(!releaseClient.includes(".sort("), "Release catalog client must preserve SC_Linked_App release order.");
 require(!releaseViewModel.includes(".sort("), "Release view model must preserve SC_Linked_App release order.");
-require(!downloads.includes(".sort("), "Downloads UI must preserve SC_Linked_App release order.");
+require(!releasePageView.includes(".sort("), "Release page renderer must preserve SC_Linked_App release order.");
+require(!downloads.includes(".sort("), "Downloads bootstrap must preserve SC_Linked_App release order.");
 require(
   releaseViewModel.includes("release.latest === true"),
   "Latest/Previous UI state must use release.latest as the primary authority."
 );
 require(
-  downloads.includes("row.downloadUrl") && releaseViewModel.includes("downloadUrl: release.downloadUrl"),
+  releasePageView.includes("row.downloadUrl") && releaseViewModel.includes("downloadUrl: release.downloadUrl"),
   "Download href must use the API downloadUrl directly."
+);
+require(
+  downloads.includes("createReleasePageView") && downloads.includes("loadReleaseCatalog"),
+  "Downloads bootstrap must only orchestrate catalog loading and page rendering."
+);
+require(
+  releasePageView.includes("buildReleaseViewModel"),
+  "Release page renderer must consume the validated release view model boundary."
+);
+require(
+  !releasePageView.includes("updaterVersion"),
+  "Release page renderer must not surface or convert updater compatibility versions."
 );
 require(
   !downloadsHtml.includes('application-worker-base'),
@@ -171,7 +187,7 @@ require(
 
 const releaseVersionLiteral = /\b\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?\b/;
 require(
-  !releaseVersionLiteral.test(downloadsHtml + "\n" + downloads),
+  !releaseVersionLiteral.test(downloadsHtml + "\n" + downloads + "\n" + releasePageView),
   "Simple Connection downloads UI must not hardcode a release version."
 );
 

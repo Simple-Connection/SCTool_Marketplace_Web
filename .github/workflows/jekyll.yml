@@ -31,6 +31,7 @@ jobs:
           node scripts/validate-site.mjs
           node --test scripts/test-release-catalog-client.mjs
           node --test scripts/test-release-view-model.mjs
+          node --test scripts/test-release-page-view.mjs
           node --test scripts/test-dashboard-categories.mjs
           node --test scripts/test-marketplace-drawer.mjs
           node --test scripts/test-download-navigation.mjs

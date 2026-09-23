@@ -44,13 +44,13 @@ This repository does not own SCTool package admission, publisher identity, Regis
 
 ### Simple Connection releases
 
-Simple Connection release metadata is owned by Application Worker. The web page consumes:
+Simple Connection release publication and the public release contract are owned by `Simple-Connection/SC_Linked_App`. SC_WEP is a presentation-only consumer of the canonical catalog endpoint:
 
 ```text
-GET /application/simple_connection/update/desktop/win/x64/releases
+GET https://www.kswdeveloper.cloud/application/simple_connection/releases
 ```
 
-The response supplies `latestVersion` and ordered `releases`. The website does not hardcode release versions, infer the latest version, or SemVer-sort releases. The Latest download card and the release table are rendered from the same catalog response.
+`site/assets/application/simple-connection/release-catalog-client.js` exposes this exact URL as `SIMPLE_CONNECTION_RELEASE_CATALOG_URL`. The browser must not derive the catalog endpoint from `window.location.origin`, the current Pages hostname, or a relative Application Worker route.
 
 The download UI is published at:
 
@@ -58,9 +58,9 @@ The download UI is published at:
 /application/simple_connection/downloads/
 ```
 
-`site/application/simple_connection/downloads/index.html` exposes an `application-worker-base` meta configuration boundary. When it is empty, the browser uses the current origin. If Application Worker uses another origin, set only that base URL; release/version logic remains unchanged.
+SC_WEP validates `schemaVersion === 1`, renders the release history in the order supplied by SC_Linked_App, and treats `release.latest === true` as the primary Latest/Previous UI authority. `latestVersion` is consistency information; SC_WEP does not sort compact versions or implement product/updater version conversion.
 
-Release `downloadUrl` values are resolved against Application Worker and must remain inside the approved `/application/simple_connection/update/desktop/win/x64/releases/` namespace. Catalog inconsistency or network failure is fail-closed; no stale hardcoded download is substituted.
+Each installer link uses the API-provided `downloadUrl` directly. SC_WEP does not build R2 object keys, reconstruct download URLs, read Cloudflare R2/KV, maintain a release manifest/database, or implement a second stable/latest pointer. If the UI needs a release field the canonical catalog does not provide, the contract must be extended in SC_Linked_App first.
 
 ## Exact Registry handoff
 
@@ -100,7 +100,7 @@ node scripts/validate-registry-hosting.mjs --site-root _site --require-registry
 
 ## Deployment
 
-`.github/workflows/jekyll.yml` validates all browser modules, the multi-page site contract, the Application Worker release catalog consumer, and the Registry hosting boundary. It then verifies the exact Registry handoff, assembles one Pages artifact, materializes the signed Registry bytes, validates the artifact, deploys it, and verifies that the public `/registry/` bytes still match the accepted handoff.
+`.github/workflows/jekyll.yml` validates all browser modules, the multi-page site contract, the SC_Linked_App release catalog consumer, and the Registry hosting boundary. It then verifies the exact Registry handoff, assembles one Pages artifact, materializes the signed Registry bytes, validates the artifact, deploys it, and verifies that the public `/registry/` bytes still match the accepted handoff.
 
 No Registry signing credentials or Registry signing implementation belong in this repository.
 
