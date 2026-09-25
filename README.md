@@ -60,7 +60,9 @@ The download UI is published at:
 
 SC_WEP validates `schemaVersion === 1`, renders the release history in the order supplied by SC_Linked_App, and treats `release.latest === true` as the primary Latest/Previous UI authority. `latestVersion` is consistency information; SC_WEP does not sort compact versions or implement product/updater version conversion.
 
-Each installer link uses the API-provided `downloadUrl` directly. SC_WEP does not build R2 object keys, reconstruct download URLs, read Cloudflare R2/KV, maintain a release manifest/database, or implement a second stable/latest pointer. If the UI needs a release field the canonical catalog does not provide, the contract must be extended in SC_Linked_App first.
+Each installer link uses the API-provided `downloadUrl` directly. SC_WEP does not access release infrastructure, reconstruct artifact paths, maintain a release manifest/database, implement a second stable/latest pointer, or depend on infrastructure-provider APIs, SDKs, credentials, challenges, storage, or fallback endpoints. If the UI needs a release field the canonical catalog does not provide, the contract must be extended in SC_Linked_App first.
+
+The approved public-access and consumer-independence policy is recorded in `docs/policy/integration/simple_connection_release_public_access.md`. The production gate verifies the canonical catalog through the actual deployed SC_WEP browser origin, requires GET/HEAD access and JSON content, validates CORS readability, and checks the API-provided latest `downloadUrl` with HEAD.
 
 ## Exact Registry handoff
 
@@ -90,6 +92,12 @@ The source code resolves this as `../registry/` relative to `site/assets/registr
 find site/assets -name '*.js' -print0 | xargs -0 -n1 node --check
 node scripts/validate-site.mjs
 node --test scripts/test-release-catalog-client.mjs
+node --test scripts/test-release-view-model.mjs
+node --test scripts/test-release-page-view.mjs
+node scripts/validate-simple-connection-provider-independence.mjs
+node --test scripts/test-simple-connection-provider-independence.mjs
+node --test scripts/test-simple-connection-public-release.mjs
+node scripts/verify-simple-connection-release-catalog.mjs --consumer-url "https://simple-connection.github.io/SCTool_Marketplace_Web/"
 node scripts/validate-registry-hosting.mjs
 node --test scripts/test-registry-hosting.mjs
 python scripts/verify-registry-handoff.py --lock deployment/registry-handoff/lock.json

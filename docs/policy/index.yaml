@@ -8,6 +8,12 @@ governance:
     source_mode: MANIFEST_BOUND_SOURCE_SET
     classifier: ../../.github/policy-tools/namespace-classifier/engine/classifier.py
     semantic_lock: ../../.github/policy-tools/namespace-classifier/generated/compiled_registry.lock.json
+integration_contracts:
+  simple_connection_release_public_access:
+    source: integration/simple_connection_release_public_access.md
+    status: approved
+    authority: SC_Linked_App
+    consumer: SC_WEP
 namespaces:
   CAT: {path: catalog}
   TAX: {path: taxonomy}

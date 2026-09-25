@@ -146,7 +146,7 @@ require(
   "Canonical Simple Connection release catalog URL must have a single explicit configuration authority."
 );
 require(!releaseClient.includes("window.location.origin"), "Release catalog URL must not be derived from the browser origin.");
-require(!releaseClient.includes("locationRef"), "Release catalog URL must not fall back to a location-derived Worker origin.");
+require(!releaseClient.includes("locationRef"), "Release catalog URL must not fall back to a location-derived origin.");
 require(!releaseClient.includes("RELEASES_PATH"), "Legacy SC_WEP-owned release catalog route must be removed.");
 require(!releaseClient.includes("DOWNLOAD_PREFIX"), "SC_WEP must not own a release artifact path prefix.");
 require(!releaseClient.includes("displayVersion"), "SC_WEP must display the canonical product version field without a duplicate displayVersion schema.");
@@ -176,7 +176,15 @@ require(
 );
 require(
   !downloadsHtml.includes('application-worker-base'),
-  "Simple Connection page must not configure a browser-origin Application Worker base."
+  "Simple Connection page must not configure a browser-origin release backend base."
+);
+require(
+  !downloadsHtml.includes("Application Worker"),
+  "Simple Connection presentation must not expose release infrastructure implementation details."
+);
+require(
+  releaseClient.includes("INVALID_CONTENT_TYPE") && releaseClient.includes("isJsonContentType"),
+  "Canonical release catalog success responses must require a JSON Content-Type."
 );
 require(
   downloadsHtml.includes("플랫폼") &&
@@ -207,7 +215,7 @@ if (failures.length) {
 console.log("Site validation PASS");
 console.log("layout=multi-page-application+shared-shell");
 console.log("marketplace_authority=sctool-registry");
-console.log("application_release_authority=application-worker");
+console.log("application_release_authority=SC_Linked_App");
 console.log("simple_connection_downloads=/application/simple_connection/downloads/");
 console.log("registry_browser_base=marketplace-pages-relative-registry");
 console.log("install_handoff=fail_closed");

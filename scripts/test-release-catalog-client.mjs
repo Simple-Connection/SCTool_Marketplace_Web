@@ -42,11 +42,19 @@ function sampleCatalog() {
   };
 }
 
-function response(status, body) {
+function response(status, body, headers = { "content-type": "application/json; charset=utf-8" }) {
   const text = typeof body === "string" ? body : JSON.stringify(body);
+  const normalizedHeaders = new Map(
+    Object.entries(headers).map(([name, value]) => [name.toLowerCase(), String(value)])
+  );
   return {
     ok: status >= 200 && status < 300,
     status,
+    headers: {
+      get(name) {
+        return normalizedHeaders.get(String(name).toLowerCase()) ?? null;
+      }
+    },
     async text() {
       return text;
     }
@@ -107,6 +115,30 @@ test("catalog 5xx is a distinct server error", async () => {
     () => loadReleaseCatalog({ fetchImpl: async () => response(503, { error: "unavailable" }) }),
     (error) => error instanceof ReleaseCatalogError && error.code === "CATALOG_SERVER_ERROR"
   );
+});
+
+test("catalog 200 with non-JSON Content-Type is rejected before body interpretation", async () => {
+  await assert.rejects(
+    () =>
+      loadReleaseCatalog({
+        fetchImpl: async () =>
+          response(
+            200,
+            "<!doctype html><title>interstitial</title>",
+            { "content-type": "text/html; charset=utf-8" }
+          )
+      }),
+    (error) => error instanceof ReleaseCatalogError && error.code === "INVALID_CONTENT_TYPE"
+  );
+});
+
+test("catalog 200 accepts structured JSON media types", async () => {
+  const catalog = await loadReleaseCatalog({
+    fetchImpl: async () =>
+      response(200, sampleCatalog(), { "content-type": "application/vnd.simple-connection+json" })
+  });
+
+  assert.equal(catalog.latestVersion, "2.2.4a1");
 });
 
 test("invalid JSON is reported separately", async () => {

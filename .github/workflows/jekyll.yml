@@ -32,6 +32,9 @@ jobs:
           node --test scripts/test-release-catalog-client.mjs
           node --test scripts/test-release-view-model.mjs
           node --test scripts/test-release-page-view.mjs
+          node scripts/validate-simple-connection-provider-independence.mjs
+          node --test scripts/test-simple-connection-provider-independence.mjs
+          node --test scripts/test-simple-connection-public-release.mjs
           node --test scripts/test-dashboard-categories.mjs
           node --test scripts/test-marketplace-drawer.mjs
           node --test scripts/test-download-navigation.mjs
@@ -73,7 +76,9 @@ jobs:
       - name: Verify canonical Simple Connection release catalog
         id: simple_connection_catalog
         continue-on-error: true
-        run: node scripts/verify-simple-connection-release-catalog.mjs
+        run: >-
+          node scripts/verify-simple-connection-release-catalog.mjs
+          --consumer-url "${{ steps.deployment.outputs.page_url }}"
 
       - name: Upload Simple Connection catalog verification evidence
         if: always()

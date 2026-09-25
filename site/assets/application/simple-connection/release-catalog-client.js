@@ -4,6 +4,18 @@ export const SIMPLE_CONNECTION_RELEASE_CATALOG_URL =
 const EXPECTED_SCHEMA_VERSION = 1;
 const MAX_DIAGNOSTIC_BODY_LENGTH = 1000;
 
+export function isJsonContentType(value) {
+  const mediaType = String(value ?? "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+
+  return (
+    mediaType === "application/json" ||
+    (mediaType.startsWith("application/") && mediaType.endsWith("+json"))
+  );
+}
+
 export class ReleaseCatalogError extends Error {
   constructor(code, message, { cause, url = "", status = null, responseBody = "" } = {}) {
     super(message);
@@ -268,6 +280,19 @@ export async function fetchReleaseCatalog({
 
   if (!response.ok) {
     throw httpError(response.status, parsedUrl.href, body);
+  }
+
+  const contentType = response.headers?.get?.("content-type") ?? "";
+  if (!isJsonContentType(contentType)) {
+    throw new ReleaseCatalogError(
+      "INVALID_CONTENT_TYPE",
+      "Release catalog 응답 Content-Type이 JSON이 아닙니다.",
+      {
+        url: parsedUrl.href,
+        status: response.status,
+        responseBody: safeResponseBody(body)
+      }
+    );
   }
 
   let payload;
